@@ -3,13 +3,11 @@ package constants
 import "github.com/rs/zerolog"
 
 const (
-	LogFileName        = "fileName"
-	LogCorrelationId   = "correlationId"
-	LogServerId        = "serverId"
-	LogDimensionId     = "dimensionId"
-	LogAreaId          = "areaId"
-	LogSubAreaId       = "subAreaId"
-	LogTransportTypeId = "transportTypeId"
+	LogFileName      = "fileName"
+	LogCorrelationId = "correlationId"
+	LogServerId      = "serverId"
+	LogGuildId       = "guildId"
+	LogChannelId     = "channelId"
 
 	LogLevelFallback = zerolog.InfoLevel
 )

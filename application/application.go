@@ -3,11 +3,11 @@ package application
 import (
 	amqp "github.com/kaellybot/kaelly-amqp"
 	"github.com/kaellybot/kaelly-configurator/models/constants"
+	"github.com/kaellybot/kaelly-configurator/repositories/chanservers"
 	guildRepo "github.com/kaellybot/kaelly-configurator/repositories/guilds"
-	serverRepo "github.com/kaellybot/kaelly-configurator/repositories/servers"
+	"github.com/kaellybot/kaelly-configurator/services/channels"
 	"github.com/kaellybot/kaelly-configurator/services/configurators"
 	"github.com/kaellybot/kaelly-configurator/services/guilds"
-	"github.com/kaellybot/kaelly-configurator/services/servers"
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
@@ -19,8 +19,8 @@ type ApplicationInterface interface {
 }
 
 type Application struct {
-	serverService       servers.ServerService
 	guildService        guilds.GuildService
+	channelService      channels.ChannelService
 	configuratorService configurators.ConfiguratorService
 	broker              amqp.MessageBrokerInterface
 }
@@ -39,28 +39,28 @@ func New() (*Application, error) {
 	}
 
 	// repositories
-	serverRepo := serverRepo.New(db)
 	guildRepo := guildRepo.New(db)
+	chanServerRepo := chanservers.New(db)
 
 	// services
-	serverService, err := servers.New(serverRepo)
-	if err != nil {
-		return nil, err
-	}
-
 	guildService, err := guilds.New(guildRepo)
 	if err != nil {
 		return nil, err
 	}
 
-	configService, err := configurators.New(broker, serverService, guildService)
+	channelService, err := channels.New(chanServerRepo)
+	if err != nil {
+		return nil, err
+	}
+
+	configService, err := configurators.New(broker, guildService, channelService)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Application{
-		serverService:       serverService,
 		guildService:        guildService,
+		channelService:      channelService,
 		configuratorService: configService,
 		broker:              broker,
 	}, nil

@@ -6,7 +6,7 @@ import (
 )
 
 type GuildService interface {
-	GetGuild(id string) (entities.Guild, error)
+	Save(guild entities.Guild) error
 }
 
 type GuildServiceImpl struct {
@@ -17,6 +17,6 @@ func New(guildRepo guilds.GuildRepository) (*GuildServiceImpl, error) {
 	return &GuildServiceImpl{guildRepo: guildRepo}, nil
 }
 
-func (service *GuildServiceImpl) GetGuild(id string) (entities.Guild, error) {
-	return service.guildRepo.GetGuild(id)
+func (service *GuildServiceImpl) Save(guild entities.Guild) error {
+	return service.guildRepo.Save(guild)
 }
