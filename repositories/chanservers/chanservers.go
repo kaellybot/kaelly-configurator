@@ -19,9 +19,7 @@ func New(db databases.MySQLConnection) *ChannelServerRepositoryImpl {
 }
 
 func (repo *ChannelServerRepositoryImpl) Save(channelServer entities.ChannelServer) error {
-	response := repo.db.GetDB().Clauses(clause.OnConflict{
+	return repo.db.GetDB().Clauses(clause.OnConflict{
 		UpdateAll: true,
-	}).Omit("Guild", "Server").Create(&channelServer)
-
-	return response.Error
+	}).Create(&channelServer).Error
 }

@@ -20,7 +20,6 @@ func New(db databases.MySQLConnection) *WebhookRepositoryImpl {
 // TODO
 
 func (repo *WebhookRepositoryImpl) GetGuild(id string) (entities.Webhook, error) {
-	var guild entities.Webhook
-	response := repo.db.GetDB().First(&guild)
-	return guild, response.Error
+	var webhook entities.Webhook
+	return webhook, repo.db.GetDB().First(&webhook).Error
 }

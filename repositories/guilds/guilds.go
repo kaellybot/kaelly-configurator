@@ -19,9 +19,7 @@ func New(db databases.MySQLConnection) *GuildRepositoryImpl {
 }
 
 func (repo *GuildRepositoryImpl) Save(guild entities.Guild) error {
-	response := repo.db.GetDB().Clauses(clause.OnConflict{
+	return repo.db.GetDB().Clauses(clause.OnConflict{
 		UpdateAll: true,
-	}).Omit("Server").Create(&guild)
-
-	return response.Error
+	}).Create(&guild).Error
 }
