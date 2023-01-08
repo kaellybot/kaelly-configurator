@@ -7,6 +7,11 @@ import (
 )
 
 func (service *ConfiguratorServiceImpl) serverRequest(correlationId, guildId, channelId, serverId string) {
+	log.Info().Str(constants.LogCorrelationId, correlationId).
+		Str(constants.LogGuildId, guildId).
+		Str(constants.LogChannelId, channelId).
+		Str(constants.LogServerId, serverId).
+		Msgf("Server configuration request received")
 
 	var err error
 	if len(channelId) == 0 {

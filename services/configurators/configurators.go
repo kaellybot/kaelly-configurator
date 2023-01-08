@@ -13,8 +13,8 @@ import (
 
 const (
 	requestQueueName   = "configurator-requests"
-	requestsRoutingkey = "requests.configurator"
-	answersRoutingkey  = "answers.configurator"
+	requestsRoutingkey = "requests.configuration"
+	answersRoutingkey  = "answers.configuration"
 )
 
 var (
@@ -69,7 +69,7 @@ func (service *ConfiguratorServiceImpl) consume(ctx context.Context,
 
 	switch request.Field {
 	case amqp.ConfigurationRequest_WEBHOOK:
-		// TODO
+		service.webhookRequest(correlationId, request.GuildId, request.ChannelId)
 	case amqp.ConfigurationRequest_SERVER:
 		service.serverRequest(correlationId, request.GuildId, request.ChannelId, request.ServerField.ServerId)
 	default:
