@@ -1,37 +1,45 @@
 package configurators
 
 import (
+	amqp "github.com/kaellybot/kaelly-amqp"
 	"github.com/kaellybot/kaelly-configurator/models/constants"
 	"github.com/kaellybot/kaelly-configurator/models/entities"
 	"github.com/rs/zerolog/log"
 )
 
-func (service *ConfiguratorServiceImpl) serverRequest(correlationId, guildId, channelId, serverId string) {
+func (service *ConfiguratorServiceImpl) serverRequest(correlationId string,
+	request *amqp.ConfigurationSetRequest, lg amqp.RabbitMQMessage_Language) {
+
+	if !isValidConfigurationServerRequest(request) {
+		service.publishFailedSetAnswer(correlationId, lg)
+		return
+	}
+
 	log.Info().Str(constants.LogCorrelationId, correlationId).
-		Str(constants.LogGuildId, guildId).
-		Str(constants.LogChannelId, channelId).
-		Str(constants.LogServerId, serverId).
-		Msgf("Server configuration request received")
+		Str(constants.LogGuildId, request.GuildId).
+		Str(constants.LogChannelId, request.ChannelId).
+		Str(constants.LogServerId, request.ServerField.ServerId).
+		Msgf("Set server configuration request received")
 
 	var err error
-	if len(channelId) == 0 {
-		err = service.updateGuildServer(guildId, serverId)
+	if len(request.ChannelId) == 0 {
+		err = service.updateGuildServer(request.GuildId, request.ServerField.ServerId)
 	} else {
-		err = service.updateChannelServer(guildId, channelId, serverId)
+		err = service.updateChannelServer(request.GuildId, request.ChannelId, request.ServerField.ServerId)
 	}
 
 	if err != nil {
 		log.Error().Err(err).
 			Str(constants.LogCorrelationId, correlationId).
-			Str(constants.LogGuildId, guildId).
-			Str(constants.LogChannelId, channelId).
-			Str(constants.LogServerId, serverId).
+			Str(constants.LogGuildId, request.GuildId).
+			Str(constants.LogChannelId, request.ChannelId).
+			Str(constants.LogServerId, request.ServerField.ServerId).
 			Msgf("Returning failed message")
-		service.publishFailedAnswer(correlationId)
+		service.publishFailedSetAnswer(correlationId, lg)
 		return
 	}
 
-	service.publishSucceededAnswer(correlationId)
+	service.publishSucceededSetAnswer(correlationId, lg)
 }
 
 func (service *ConfiguratorServiceImpl) updateGuildServer(guildId, serverId string) error {
@@ -47,4 +55,8 @@ func (service *ConfiguratorServiceImpl) updateChannelServer(guildId, channelId, 
 		ChannelId: channelId,
 		ServerId:  serverId,
 	})
+}
+
+func isValidConfigurationServerRequest(request *amqp.ConfigurationSetRequest) bool {
+	return request.GetServerField() != nil
 }
