@@ -3,7 +3,6 @@ package chanservers
 import (
 	"github.com/kaellybot/kaelly-configurator/models/entities"
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
-	"gorm.io/gorm/clause"
 )
 
 type ChannelServerRepository interface {
@@ -19,7 +18,5 @@ func New(db databases.MySQLConnection) *ChannelServerRepositoryImpl {
 }
 
 func (repo *ChannelServerRepositoryImpl) Save(channelServer entities.ChannelServer) error {
-	return repo.db.GetDB().Clauses(clause.OnConflict{
-		UpdateAll: true,
-	}).Create(&channelServer).Error
+	return repo.db.GetDB().Save(&channelServer).Error
 }

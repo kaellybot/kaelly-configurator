@@ -2,7 +2,7 @@ package entities
 
 import "github.com/kaellybot/kaelly-configurator/models/constants"
 
-type Webhook struct {
+type ChannelWebhook struct {
 	GuildId      string                `gorm:"primaryKey"`
 	ChannelId    string                `gorm:"primaryKey"`
 	WebhookId    string                `gorm:"primaryKey"`

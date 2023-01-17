@@ -7,7 +7,7 @@ import (
 )
 
 func (service *ConfiguratorServiceImpl) webhookRequest(correlationId string,
-	request *amqp.ConfigurationSetRequest, lg amqp.RabbitMQMessage_Language) {
+	request *amqp.ConfigurationSetRequest, lg amqp.Language) {
 
 	if !isValidConfigurationWebhookRequest(request) {
 		service.publishFailedSetAnswer(correlationId, lg)

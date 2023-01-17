@@ -8,7 +8,7 @@ import (
 )
 
 func (service *ConfiguratorServiceImpl) serverRequest(correlationId string,
-	request *amqp.ConfigurationSetRequest, lg amqp.RabbitMQMessage_Language) {
+	request *amqp.ConfigurationSetRequest, lg amqp.Language) {
 
 	if !isValidConfigurationServerRequest(request) {
 		service.publishFailedSetAnswer(correlationId, lg)

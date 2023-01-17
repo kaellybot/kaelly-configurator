@@ -3,10 +3,10 @@ package guilds
 import (
 	"github.com/kaellybot/kaelly-configurator/models/entities"
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
-	"gorm.io/gorm/clause"
 )
 
 type GuildRepository interface {
+	Get(guildId string) (entities.Guild, error)
 	Save(guild entities.Guild) error
 }
 
@@ -18,8 +18,11 @@ func New(db databases.MySQLConnection) *GuildRepositoryImpl {
 	return &GuildRepositoryImpl{db: db}
 }
 
+func (repo *GuildRepositoryImpl) Get(guildId string) (entities.Guild, error) {
+	var guild entities.Guild
+	return guild, repo.db.GetDB().Preload("ChannelServers").Preload("ChannelWebhooks").First(&guild).Error
+}
+
 func (repo *GuildRepositoryImpl) Save(guild entities.Guild) error {
-	return repo.db.GetDB().Clauses(clause.OnConflict{
-		UpdateAll: true,
-	}).Create(&guild).Error
+	return repo.db.GetDB().Save(&guild).Error
 }

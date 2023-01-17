@@ -3,6 +3,8 @@ package configurators
 import (
 	amqp "github.com/kaellybot/kaelly-amqp"
 	"github.com/kaellybot/kaelly-configurator/models/constants"
+	"github.com/kaellybot/kaelly-configurator/models/entities"
+	"github.com/kaellybot/kaelly-configurator/models/mappers"
 	"github.com/rs/zerolog/log"
 )
 
@@ -17,28 +19,38 @@ func (service *ConfiguratorServiceImpl) getRequest(message *amqp.RabbitMQMessage
 		Str(constants.LogGuildId, request.GuildId).
 		Msgf("Get configuration request received")
 
-	// TODO
+	guild, err := service.guildService.Get(request.GuildId)
+	if err != nil {
+		log.Error().Err(err).
+			Str(constants.LogCorrelationId, correlationId).
+			Str(constants.LogGuildId, request.GuildId).
+			Msgf("Returning failed answer")
+		service.publishFailedGetAnswer(correlationId, message.Language)
+		return
+	}
 
-	service.publishSucceededGetAnswer(correlationId, message.Language)
+	service.publishSucceededGetAnswer(correlationId, guild, message.Language)
 }
 
-func (service *ConfiguratorServiceImpl) publishSucceededGetAnswer(correlationId string, lg amqp.RabbitMQMessage_Language) {
+func (service *ConfiguratorServiceImpl) publishSucceededGetAnswer(correlationId string,
+	guild entities.Guild, lg amqp.Language) {
+
 	message := amqp.RabbitMQMessage{
 		Type:                   amqp.RabbitMQMessage_CONFIGURATION_GET_ANSWER,
 		Status:                 amqp.RabbitMQMessage_SUCCESS,
 		Language:               lg,
-		ConfigurationGetAnswer: &amqp.ConfigurationGetAnswer{
-			// TODO
-		},
+		ConfigurationGetAnswer: mappers.MapGuild(guild),
 	}
 
 	err := service.broker.Publish(&message, amqp.ExchangeAnswer, answersRoutingkey, correlationId)
 	if err != nil {
-		log.Error().Err(err).Str(constants.LogCorrelationId, correlationId).Msgf("Cannot publish via broker, request ignored")
+		log.Error().Err(err).
+			Str(constants.LogCorrelationId, correlationId).
+			Msgf("Cannot publish via broker, request ignored")
 	}
 }
 
-func (service *ConfiguratorServiceImpl) publishFailedGetAnswer(correlationId string, lg amqp.RabbitMQMessage_Language) {
+func (service *ConfiguratorServiceImpl) publishFailedGetAnswer(correlationId string, lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
 		Type:     amqp.RabbitMQMessage_CONFIGURATION_GET_ANSWER,
 		Status:   amqp.RabbitMQMessage_FAILED,
@@ -47,7 +59,9 @@ func (service *ConfiguratorServiceImpl) publishFailedGetAnswer(correlationId str
 
 	err := service.broker.Publish(&message, amqp.ExchangeAnswer, answersRoutingkey, correlationId)
 	if err != nil {
-		log.Error().Err(err).Str(constants.LogCorrelationId, correlationId).Msgf("Cannot publish via broker, request ignored")
+		log.Error().Err(err).
+			Str(constants.LogCorrelationId, correlationId).
+			Msgf("Cannot publish via broker, request ignored")
 	}
 }
 

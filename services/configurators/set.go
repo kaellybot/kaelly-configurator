@@ -26,9 +26,7 @@ func (service *ConfiguratorServiceImpl) setRequest(message *amqp.RabbitMQMessage
 	}
 }
 
-func (service *ConfiguratorServiceImpl) publishSucceededSetAnswer(correlationId string,
-	lg amqp.RabbitMQMessage_Language) {
-
+func (service *ConfiguratorServiceImpl) publishSucceededSetAnswer(correlationId string, lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
 		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_ANSWER,
 		Status:   amqp.RabbitMQMessage_SUCCESS,
@@ -43,9 +41,7 @@ func (service *ConfiguratorServiceImpl) publishSucceededSetAnswer(correlationId 
 	}
 }
 
-func (service *ConfiguratorServiceImpl) publishFailedSetAnswer(correlationId string,
-	lg amqp.RabbitMQMessage_Language) {
-
+func (service *ConfiguratorServiceImpl) publishFailedSetAnswer(correlationId string, lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
 		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_ANSWER,
 		Status:   amqp.RabbitMQMessage_FAILED,
