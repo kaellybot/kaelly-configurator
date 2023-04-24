@@ -16,7 +16,7 @@ func MapGuild(guild entities.Guild) *amqp.ConfigurationGetAnswer {
 		ServerId:        serverId,
 		ChannelServers:  mapChannelServers(guild.ChannelServers),
 		AlmanaxWebhooks: mapAlmanaxWebhooks(guild.AlmanaxWebhooks),
-		RssWebhooks:     mapFeedWebhooks(guild.RssWebhooks),
+		RssWebhooks:     mapFeedWebhooks(guild.FeedWebhooks),
 		TwitterWebhooks: mapTwitterWebhooks(guild.TwitterWebhooks),
 	}
 }

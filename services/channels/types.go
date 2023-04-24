@@ -10,14 +10,14 @@ import (
 
 type ChannelService interface {
 	SaveChannelServer(channelServer entities.ChannelServer) error
-	SaveAlmanaxWebhook(channelServer entities.WebhookAlmanax) error
-	SaveRssWebhook(channelServer entities.WebhookFeed) error
-	SaveTwitterWebhook(channelServer entities.WebhookTwitter) error
+	SaveAlmanaxWebhook(webhook entities.WebhookAlmanax) error
+	SaveFeedWebhook(webhook entities.WebhookFeed) error
+	SaveTwitterWebhook(webhook entities.WebhookTwitter) error
 }
 
 type ChannelServiceImpl struct {
 	channelServerRepo  servers.ChannelServerRepository
 	almanaxWebhookRepo almanax.AlmanaxWebhookRepository
-	rssWebhookRepo     feeds.RssWebhookRepository
+	feedWebhookRepo    feeds.FeedWebhookRepository
 	twitterWebhookRepo twitter.TwitterWebhookRepository
 }

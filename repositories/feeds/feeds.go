@@ -5,10 +5,10 @@ import (
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
 
-func New(db databases.MySQLConnection) *RssWebhookRepositoryImpl {
-	return &RssWebhookRepositoryImpl{db: db}
+func New(db databases.MySQLConnection) *FeedWebhookRepositoryImpl {
+	return &FeedWebhookRepositoryImpl{db: db}
 }
 
-func (repo *RssWebhookRepositoryImpl) Save(webhook entities.WebhookFeed) error {
+func (repo *FeedWebhookRepositoryImpl) Save(webhook entities.WebhookFeed) error {
 	return repo.db.GetDB().Save(&webhook).Error
 }

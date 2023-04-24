@@ -9,12 +9,12 @@ import (
 )
 
 func New(channelServerRepo servers.ChannelServerRepository, almanaxRepo almanax.AlmanaxWebhookRepository,
-	rssRepo feeds.RssWebhookRepository, twitterRepo twitter.TwitterWebhookRepository) (*ChannelServiceImpl, error) {
+	feedRepo feeds.FeedWebhookRepository, twitterRepo twitter.TwitterWebhookRepository) (*ChannelServiceImpl, error) {
 
 	return &ChannelServiceImpl{
 		channelServerRepo:  channelServerRepo,
 		almanaxWebhookRepo: almanaxRepo,
-		rssWebhookRepo:     rssRepo,
+		feedWebhookRepo:    feedRepo,
 		twitterWebhookRepo: twitterRepo,
 	}, nil
 }
@@ -27,8 +27,8 @@ func (service *ChannelServiceImpl) SaveAlmanaxWebhook(webhook entities.WebhookAl
 	return service.almanaxWebhookRepo.Save(webhook)
 }
 
-func (service *ChannelServiceImpl) SaveRssWebhook(webhook entities.WebhookFeed) error {
-	return service.rssWebhookRepo.Save(webhook)
+func (service *ChannelServiceImpl) SaveFeedWebhook(webhook entities.WebhookFeed) error {
+	return service.feedWebhookRepo.Save(webhook)
 }
 
 func (service *ChannelServiceImpl) SaveTwitterWebhook(webhook entities.WebhookTwitter) error {

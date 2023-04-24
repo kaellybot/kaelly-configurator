@@ -5,10 +5,10 @@ import (
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
 
-type RssWebhookRepository interface {
+type FeedWebhookRepository interface {
 	Save(channelWebhook entities.WebhookFeed) error
 }
 
-type RssWebhookRepositoryImpl struct {
+type FeedWebhookRepositoryImpl struct {
 	db databases.MySQLConnection
 }
