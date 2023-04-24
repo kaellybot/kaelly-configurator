@@ -1,4 +1,4 @@
-package webhooktwitter
+package twitter
 
 import (
 	"github.com/kaellybot/kaelly-configurator/models/entities"
@@ -9,6 +9,6 @@ func New(db databases.MySQLConnection) *TwitterWebhookRepositoryImpl {
 	return &TwitterWebhookRepositoryImpl{db: db}
 }
 
-func (repo *TwitterWebhookRepositoryImpl) Save(webhook entities.TwitterWebhook) error {
+func (repo *TwitterWebhookRepositoryImpl) Save(webhook entities.WebhookTwitter) error {
 	return repo.db.GetDB().Save(&webhook).Error
 }

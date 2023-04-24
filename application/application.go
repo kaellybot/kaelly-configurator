@@ -3,8 +3,11 @@ package application
 import (
 	amqp "github.com/kaellybot/kaelly-amqp"
 	"github.com/kaellybot/kaelly-configurator/models/constants"
-	"github.com/kaellybot/kaelly-configurator/repositories/chanservers"
+	"github.com/kaellybot/kaelly-configurator/repositories/almanax"
+	"github.com/kaellybot/kaelly-configurator/repositories/feeds"
 	guildRepo "github.com/kaellybot/kaelly-configurator/repositories/guilds"
+	"github.com/kaellybot/kaelly-configurator/repositories/servers"
+	"github.com/kaellybot/kaelly-configurator/repositories/twitter"
 	"github.com/kaellybot/kaelly-configurator/services/channels"
 	"github.com/kaellybot/kaelly-configurator/services/configurators"
 	"github.com/kaellybot/kaelly-configurator/services/guilds"
@@ -12,18 +15,6 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )
-
-type ApplicationInterface interface {
-	Run() error
-	Shutdown()
-}
-
-type Application struct {
-	guildService        guilds.GuildService
-	channelService      channels.ChannelService
-	configuratorService configurators.ConfiguratorService
-	broker              amqp.MessageBrokerInterface
-}
 
 func New() (*Application, error) {
 	// misc
@@ -40,7 +31,10 @@ func New() (*Application, error) {
 
 	// repositories
 	guildRepo := guildRepo.New(db)
-	chanServerRepo := chanservers.New(db)
+	chanServerRepo := servers.New(db)
+	almanaxRepo := almanax.New(db)
+	feedsRepo := feeds.New(db)
+	twitterRepo := twitter.New(db)
 
 	// services
 	guildService, err := guilds.New(guildRepo)
@@ -48,7 +42,7 @@ func New() (*Application, error) {
 		return nil, err
 	}
 
-	channelService, err := channels.New(chanServerRepo)
+	channelService, err := channels.New(chanServerRepo, almanaxRepo, feedsRepo, twitterRepo)
 	if err != nil {
 		return nil, err
 	}

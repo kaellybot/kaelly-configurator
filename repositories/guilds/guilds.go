@@ -5,15 +5,6 @@ import (
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
 
-type GuildRepository interface {
-	Get(guildId string) (entities.Guild, error)
-	Save(guild entities.Guild) error
-}
-
-type GuildRepositoryImpl struct {
-	db databases.MySQLConnection
-}
-
 func New(db databases.MySQLConnection) *GuildRepositoryImpl {
 	return &GuildRepositoryImpl{db: db}
 }

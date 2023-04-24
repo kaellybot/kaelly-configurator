@@ -1,4 +1,4 @@
-package webhookrss
+package feeds
 
 import (
 	"github.com/kaellybot/kaelly-configurator/models/entities"
@@ -6,7 +6,7 @@ import (
 )
 
 type RssWebhookRepository interface {
-	Save(channelWebhook entities.RssWebhook) error
+	Save(channelWebhook entities.WebhookFeed) error
 }
 
 type RssWebhookRepositoryImpl struct {

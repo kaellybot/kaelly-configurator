@@ -16,7 +16,7 @@ func MapGuild(guild entities.Guild) *amqp.ConfigurationGetAnswer {
 		ServerId:        serverId,
 		ChannelServers:  mapChannelServers(guild.ChannelServers),
 		AlmanaxWebhooks: mapAlmanaxWebhooks(guild.AlmanaxWebhooks),
-		RssWebhooks:     mapRssWebhooks(guild.RssWebhooks),
+		RssWebhooks:     mapFeedWebhooks(guild.RssWebhooks),
 		TwitterWebhooks: mapTwitterWebhooks(guild.TwitterWebhooks),
 	}
 }
@@ -34,37 +34,37 @@ func mapChannelServers(channelServers []entities.ChannelServer) []*amqp.Configur
 	return result
 }
 
-func mapAlmanaxWebhooks(webhooks []entities.AlmanaxWebhook) []*amqp.ConfigurationGetAnswer_AlmanaxWebhook {
+func mapAlmanaxWebhooks(webhooks []entities.WebhookAlmanax) []*amqp.ConfigurationGetAnswer_AlmanaxWebhook {
 	result := make([]*amqp.ConfigurationGetAnswer_AlmanaxWebhook, 0)
 	for _, webhook := range webhooks {
 		result = append(result, &amqp.ConfigurationGetAnswer_AlmanaxWebhook{
 			ChannelId: webhook.ChannelId,
-			Language:  webhook.Language,
+			Language:  webhook.Locale,
 		})
 	}
 
 	return result
 }
 
-func mapRssWebhooks(webhooks []entities.RssWebhook) []*amqp.ConfigurationGetAnswer_RssWebhook {
+func mapFeedWebhooks(webhooks []entities.WebhookFeed) []*amqp.ConfigurationGetAnswer_RssWebhook {
 	result := make([]*amqp.ConfigurationGetAnswer_RssWebhook, 0)
 	for _, webhook := range webhooks {
 		result = append(result, &amqp.ConfigurationGetAnswer_RssWebhook{
 			ChannelId: webhook.ChannelId,
-			Language:  webhook.Language,
-			FeedId:    webhook.FeedId,
+			Language:  webhook.Locale,
+			FeedId:    webhook.FeedTypeId,
 		})
 	}
 
 	return result
 }
 
-func mapTwitterWebhooks(webhooks []entities.TwitterWebhook) []*amqp.ConfigurationGetAnswer_TwitterWebhook {
+func mapTwitterWebhooks(webhooks []entities.WebhookTwitter) []*amqp.ConfigurationGetAnswer_TwitterWebhook {
 	result := make([]*amqp.ConfigurationGetAnswer_TwitterWebhook, 0)
 	for _, webhook := range webhooks {
 		result = append(result, &amqp.ConfigurationGetAnswer_TwitterWebhook{
 			ChannelId: webhook.ChannelId,
-			Language:  webhook.Language,
+			Language:  webhook.Locale,
 		})
 	}
 

@@ -1,4 +1,4 @@
-package webhooktwitter
+package twitter
 
 import (
 	"github.com/kaellybot/kaelly-configurator/models/entities"
@@ -6,7 +6,7 @@ import (
 )
 
 type TwitterWebhookRepository interface {
-	Save(channelWebhook entities.TwitterWebhook) error
+	Save(channelWebhook entities.WebhookTwitter) error
 }
 
 type TwitterWebhookRepositoryImpl struct {

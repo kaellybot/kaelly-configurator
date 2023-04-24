@@ -2,27 +2,30 @@ package entities
 
 import amqp "github.com/kaellybot/kaelly-amqp"
 
-type AlmanaxWebhook struct {
-	GuildId      string `gorm:"primaryKey"`
-	ChannelId    string `gorm:"primaryKey"`
+type WebhookAlmanax struct {
 	WebhookId    string
 	WebhookToken string
-	Language     amqp.Language `gorm:"primaryKey"`
+	GuildId      string        `gorm:"primaryKey"`
+	ChannelId    string        `gorm:"primaryKey"`
+	Locale       amqp.Language `gorm:"primaryKey"`
 }
 
-type RssWebhook struct {
-	GuildId      string `gorm:"primaryKey"`
-	ChannelId    string `gorm:"primaryKey"`
-	FeedId       string `gorm:"primaryKey"` // TODO feed Type
+type WebhookFeed struct {
 	WebhookId    string
 	WebhookToken string
-	Language     amqp.Language `gorm:"primaryKey"`
+	GuildId      string        `gorm:"primaryKey"`
+	ChannelId    string        `gorm:"primaryKey"`
+	FeedTypeId   string        `gorm:"primaryKey"`
+	Locale       amqp.Language `gorm:"primaryKey"`
+	FeedSource   FeedSource    `gorm:"foreignKey:FeedTypeId,Locale"`
 }
 
-type TwitterWebhook struct {
-	GuildId      string `gorm:"primaryKey"`
-	ChannelId    string `gorm:"primaryKey"`
-	WebhookId    string
-	WebhookToken string
-	Language     amqp.Language `gorm:"primaryKey"`
+type WebhookTwitter struct {
+	WebhookId      string
+	WebhookToken   string
+	GuildId        string         `gorm:"primaryKey"`
+	ChannelId      string         `gorm:"primaryKey"`
+	TwitterId      string         `gorm:"primaryKey"`
+	Locale         amqp.Language  `gorm:"primaryKey"`
+	TwitterAccount TwitterAccount `gorm:"foreignKey:TwitterId,Locale"`
 }

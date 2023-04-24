@@ -1,14 +1,14 @@
-package webhookalmanax
+package servers
 
 import (
 	"github.com/kaellybot/kaelly-configurator/models/entities"
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
 
-type AlmanaxWebhookRepository interface {
-	Save(channelWebhook entities.AlmanaxWebhook) error
+type ChannelServerRepository interface {
+	Save(channelServer entities.ChannelServer) error
 }
 
-type AlmanaxWebhookRepositoryImpl struct {
+type ChannelServerRepositoryImpl struct {
 	db databases.MySQLConnection
 }

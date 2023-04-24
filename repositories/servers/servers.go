@@ -1,4 +1,4 @@
-package chanservers
+package servers
 
 import (
 	"github.com/kaellybot/kaelly-configurator/models/entities"
