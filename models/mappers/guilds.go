@@ -65,6 +65,7 @@ func mapTwitterWebhooks(webhooks []entities.WebhookTwitter) []*amqp.Configuratio
 		result = append(result, &amqp.ConfigurationGetAnswer_TwitterWebhook{
 			ChannelId: webhook.ChannelId,
 			Language:  webhook.Locale,
+			Name:      webhook.TwitterAccount.Name,
 		})
 	}
 

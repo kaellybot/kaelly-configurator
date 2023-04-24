@@ -15,7 +15,7 @@ func (repo *GuildRepositoryImpl) Get(guildId string) (entities.Guild, error) {
 		Preload("ChannelServers").
 		Preload("AlmanaxWebhooks").
 		Preload("RssWebhooks").
-		Preload("TwitterWebhooks").
+		Preload("TwitterWebhooks.Twitter").
 		First(&guild).Error
 }
 
