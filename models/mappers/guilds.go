@@ -39,6 +39,7 @@ func mapAlmanaxWebhooks(webhooks []entities.WebhookAlmanax) []*amqp.Configuratio
 	for _, webhook := range webhooks {
 		result = append(result, &amqp.ConfigurationGetAnswer_AlmanaxWebhook{
 			ChannelId: webhook.ChannelId,
+			WebhookId: webhook.WebhookId,
 			Language:  webhook.Locale,
 		})
 	}
@@ -51,8 +52,9 @@ func mapFeedWebhooks(webhooks []entities.WebhookFeed) []*amqp.ConfigurationGetAn
 	for _, webhook := range webhooks {
 		result = append(result, &amqp.ConfigurationGetAnswer_RssWebhook{
 			ChannelId: webhook.ChannelId,
-			Language:  webhook.Locale,
+			WebhookId: webhook.WebhookId,
 			FeedId:    webhook.FeedTypeId,
+			Language:  webhook.Locale,
 		})
 	}
 
@@ -64,8 +66,9 @@ func mapTwitterWebhooks(webhooks []entities.WebhookTwitter) []*amqp.Configuratio
 	for _, webhook := range webhooks {
 		result = append(result, &amqp.ConfigurationGetAnswer_TwitterWebhook{
 			ChannelId: webhook.ChannelId,
-			Language:  webhook.Locale,
+			WebhookId: webhook.WebhookId,
 			Name:      webhook.TwitterAccount.Name,
+			Language:  webhook.Locale,
 		})
 	}
 
