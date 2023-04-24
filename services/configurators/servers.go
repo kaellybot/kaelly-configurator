@@ -7,25 +7,24 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *ConfiguratorServiceImpl) serverRequest(correlationId string,
-	request *amqp.ConfigurationSetRequest, lg amqp.Language) {
-
+func (service *ConfiguratorServiceImpl) serverRequest(message *amqp.RabbitMQMessage, correlationId string) {
+	request := message.ConfigurationSetServerRequest
 	if !isValidConfigurationServerRequest(request) {
-		service.publishFailedSetAnswer(correlationId, lg)
+		service.publishFailedSetAnswer(correlationId, message.Language)
 		return
 	}
 
 	log.Info().Str(constants.LogCorrelationId, correlationId).
 		Str(constants.LogGuildId, request.GuildId).
 		Str(constants.LogChannelId, request.ChannelId).
-		Str(constants.LogServerId, request.ServerField.ServerId).
+		Str(constants.LogServerId, request.ServerId).
 		Msgf("Set server configuration request received")
 
 	var err error
 	if len(request.ChannelId) == 0 {
-		err = service.updateGuildServer(request.GuildId, request.ServerField.ServerId)
+		err = service.updateGuildServer(request.GuildId, request.ServerId)
 	} else {
-		err = service.updateChannelServer(request.GuildId, request.ChannelId, request.ServerField.ServerId)
+		err = service.updateChannelServer(request.GuildId, request.ChannelId, request.ServerId)
 	}
 
 	if err != nil {
@@ -33,13 +32,13 @@ func (service *ConfiguratorServiceImpl) serverRequest(correlationId string,
 			Str(constants.LogCorrelationId, correlationId).
 			Str(constants.LogGuildId, request.GuildId).
 			Str(constants.LogChannelId, request.ChannelId).
-			Str(constants.LogServerId, request.ServerField.ServerId).
+			Str(constants.LogServerId, request.ServerId).
 			Msgf("Returning failed message")
-		service.publishFailedSetAnswer(correlationId, lg)
+		service.publishFailedSetAnswer(correlationId, message.Language)
 		return
 	}
 
-	service.publishSucceededSetAnswer(correlationId, lg)
+	service.publishSucceededSetAnswer(correlationId, message.Language)
 }
 
 func (service *ConfiguratorServiceImpl) updateGuildServer(guildId, serverId string) error {
@@ -57,6 +56,6 @@ func (service *ConfiguratorServiceImpl) updateChannelServer(guildId, channelId, 
 	})
 }
 
-func isValidConfigurationServerRequest(request *amqp.ConfigurationSetRequest) bool {
-	return request.GetServerField() != nil
+func isValidConfigurationServerRequest(request *amqp.ConfigurationSetServerRequest) bool {
+	return request != nil
 }

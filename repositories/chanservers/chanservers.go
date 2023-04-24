@@ -5,14 +5,6 @@ import (
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
 
-type ChannelServerRepository interface {
-	Save(channelServer entities.ChannelServer) error
-}
-
-type ChannelServerRepositoryImpl struct {
-	db databases.MySQLConnection
-}
-
 func New(db databases.MySQLConnection) *ChannelServerRepositoryImpl {
 	return &ChannelServerRepositoryImpl{db: db}
 }

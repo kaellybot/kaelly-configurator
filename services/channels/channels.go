@@ -5,14 +5,6 @@ import (
 	"github.com/kaellybot/kaelly-configurator/repositories/chanservers"
 )
 
-type ChannelService interface {
-	SaveChannelServer(channelServer entities.ChannelServer) error
-}
-
-type ChannelServiceImpl struct {
-	channelServerRepo chanservers.ChannelServerRepository
-}
-
 func New(channelServerRepo chanservers.ChannelServerRepository) (*ChannelServiceImpl, error) {
 	return &ChannelServiceImpl{channelServerRepo: channelServerRepo}, nil
 }

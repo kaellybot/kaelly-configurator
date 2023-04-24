@@ -5,15 +5,6 @@ import (
 	"github.com/kaellybot/kaelly-configurator/repositories/guilds"
 )
 
-type GuildService interface {
-	Get(guildId string) (entities.Guild, error)
-	Save(guild entities.Guild) error
-}
-
-type GuildServiceImpl struct {
-	guildRepo guilds.GuildRepository
-}
-
 func New(guildRepo guilds.GuildRepository) (*GuildServiceImpl, error) {
 	return &GuildServiceImpl{guildRepo: guildRepo}, nil
 }

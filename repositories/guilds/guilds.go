@@ -20,7 +20,12 @@ func New(db databases.MySQLConnection) *GuildRepositoryImpl {
 
 func (repo *GuildRepositoryImpl) Get(guildId string) (entities.Guild, error) {
 	var guild entities.Guild
-	return guild, repo.db.GetDB().Preload("ChannelServers").Preload("ChannelWebhooks").First(&guild).Error
+	return guild, repo.db.GetDB().
+		Preload("ChannelServers").
+		Preload("AlmanaxWebhooks").
+		Preload("RssWebhooks").
+		Preload("TwitterWebhooks").
+		First(&guild).Error
 }
 
 func (repo *GuildRepositoryImpl) Save(guild entities.Guild) error {
