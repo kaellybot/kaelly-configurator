@@ -9,7 +9,7 @@ import (
 
 func (service *ConfiguratorServiceImpl) rssRequest(message *amqp.RabbitMQMessage, correlationId string) {
 	request := message.ConfigurationSetRssWebhookRequest
-	if !isValidRssRequest(request) {
+	if !isValidFeedRequest(request) {
 		service.publishFailedSetAnswer(correlationId, message.Language)
 		return
 	}
@@ -17,9 +17,19 @@ func (service *ConfiguratorServiceImpl) rssRequest(message *amqp.RabbitMQMessage
 	log.Info().Str(constants.LogCorrelationId, correlationId).
 		Str(constants.LogGuildId, request.GuildId).
 		Str(constants.LogChannelId, request.ChannelId).
-		Msgf("Set rss webhook configuration request received")
+		Msgf("Set feed webhook configuration request received")
 
-	// TODO else delete, checks if it exists, etc.
+	oldWebhook, err := service.channelService.GetFeedWebhook(request.GuildId, request.ChannelId, request.FeedId, request.Language)
+	if err != nil {
+		log.Error().Err(err).Str(constants.LogCorrelationId, correlationId).
+			Str(constants.LogGuildId, request.GuildId).
+			Str(constants.LogChannelId, request.ChannelId).
+			Str(constants.LogFeedTypeId, request.FeedId).
+			Msgf("Feed webhook retrieval has failed, answering with failed response")
+		service.publishFailedSetWebhookAnswer(correlationId, request.WebhookId, message.Language)
+		return
+	}
+
 	if request.Enabled {
 		err := service.channelService.SaveFeedWebhook(entities.WebhookFeed{
 			WebhookId:    request.WebhookId,
@@ -28,20 +38,37 @@ func (service *ConfiguratorServiceImpl) rssRequest(message *amqp.RabbitMQMessage
 			ChannelId:    request.ChannelId,
 			Locale:       request.Language,
 			FeedTypeId:   request.FeedId,
+			RetryNumber:  0,
 		})
 		if err != nil {
 			log.Error().Err(err).Str(constants.LogCorrelationId, correlationId).
 				Str(constants.LogGuildId, request.GuildId).
 				Str(constants.LogChannelId, request.ChannelId).
-				Msgf("Set almanax webhook configuration request received")
+				Str(constants.LogFeedTypeId, request.FeedId).
+				Msgf("Feed webhook save has failed, answering with failed response")
+			service.publishFailedSetWebhookAnswer(correlationId, request.WebhookId, message.Language)
+			return
+		}
+	} else {
+		err := service.channelService.DeleteFeedWebhook(oldWebhook)
+		if err != nil {
+			log.Error().Err(err).Str(constants.LogCorrelationId, correlationId).
+				Str(constants.LogGuildId, request.GuildId).
+				Str(constants.LogChannelId, request.ChannelId).
+				Str(constants.LogFeedTypeId, request.FeedId).
+				Msgf("Feed webhook removal has failed, answering with failed response")
 			service.publishFailedSetAnswer(correlationId, message.Language)
 			return
 		}
 	}
 
-	service.publishSucceededSetAnswer(correlationId, message.Language)
+	if oldWebhook != nil {
+		service.publishSucceededSetWebhookAnswer(correlationId, oldWebhook.WebhookId, message.Language)
+	} else {
+		service.publishSucceededSetAnswer(correlationId, message.Language)
+	}
 }
 
-func isValidRssRequest(request *amqp.ConfigurationSetRssWebhookRequest) bool {
+func isValidFeedRequest(request *amqp.ConfigurationSetRssWebhookRequest) bool {
 	return request != nil
 }
