@@ -1,6 +1,10 @@
 package entities
 
-import amqp "github.com/kaellybot/kaelly-amqp"
+import (
+	"time"
+
+	amqp "github.com/kaellybot/kaelly-amqp"
+)
 
 type WebhookAlmanax struct {
 	WebhookId    string
@@ -8,6 +12,8 @@ type WebhookAlmanax struct {
 	GuildId      string        `gorm:"primaryKey"`
 	ChannelId    string        `gorm:"primaryKey"`
 	Locale       amqp.Language `gorm:"primaryKey"`
+	RetryNumber  int64         `gorm:"default:0"`
+	UpdatedAt    time.Time
 }
 
 type WebhookFeed struct {
@@ -18,6 +24,8 @@ type WebhookFeed struct {
 	FeedTypeId   string        `gorm:"primaryKey"`
 	Locale       amqp.Language `gorm:"primaryKey"`
 	FeedSource   FeedSource    `gorm:"foreignKey:FeedTypeId,Locale"`
+	RetryNumber  int64         `gorm:"default:0"`
+	UpdatedAt    time.Time
 }
 
 type WebhookTwitter struct {
@@ -27,4 +35,6 @@ type WebhookTwitter struct {
 	ChannelId      string         `gorm:"primaryKey"`
 	Locale         amqp.Language  `gorm:"primaryKey"`
 	TwitterAccount TwitterAccount `gorm:"foreignKey:Locale"`
+	RetryNumber    int64          `gorm:"default:0"`
+	UpdatedAt      time.Time
 }
