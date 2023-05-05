@@ -5,11 +5,11 @@ import (
 	"github.com/kaellybot/kaelly-configurator/repositories/guilds"
 )
 
-type GuildService interface {
-	Get(guildId string) (entities.Guild, error)
+type Service interface {
+	Get(guildID string) (entities.Guild, error)
 	Save(guild entities.Guild) error
 }
 
-type GuildServiceImpl struct {
-	guildRepo guilds.GuildRepository
+type Impl struct {
+	guildRepo guilds.Repository
 }

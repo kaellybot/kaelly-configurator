@@ -6,7 +6,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *ConfiguratorServiceImpl) publishSucceededSetWebhookAnswer(correlationId, webhookId string,
+func (service *Impl) publishSucceededSetWebhookAnswer(correlationId, webhookId string,
 	lg amqp.Language) {
 
 	message := amqp.RabbitMQMessage{
@@ -27,7 +27,7 @@ func (service *ConfiguratorServiceImpl) publishSucceededSetWebhookAnswer(correla
 	}
 }
 
-func (service *ConfiguratorServiceImpl) publishSucceededSetAnswer(correlationId string, lg amqp.Language) {
+func (service *Impl) publishSucceededSetAnswer(correlationId string, lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
 		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_ANSWER,
 		Status:   amqp.RabbitMQMessage_SUCCESS,
@@ -45,7 +45,7 @@ func (service *ConfiguratorServiceImpl) publishSucceededSetAnswer(correlationId 
 	}
 }
 
-func (service *ConfiguratorServiceImpl) publishFailedSetWebhookAnswer(correlationId, webhookId string,
+func (service *Impl) publishFailedSetWebhookAnswer(correlationId, webhookId string,
 	lg amqp.Language) {
 
 	message := amqp.RabbitMQMessage{
@@ -66,7 +66,7 @@ func (service *ConfiguratorServiceImpl) publishFailedSetWebhookAnswer(correlatio
 	}
 }
 
-func (service *ConfiguratorServiceImpl) publishFailedSetAnswer(correlationId string, lg amqp.Language) {
+func (service *Impl) publishFailedSetAnswer(correlationId string, lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
 		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_ANSWER,
 		Status:   amqp.RabbitMQMessage_FAILED,

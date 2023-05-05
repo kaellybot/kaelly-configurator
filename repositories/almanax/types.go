@@ -6,12 +6,12 @@ import (
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
 
-type AlmanaxWebhookRepository interface {
-	Get(guildId, channelId string, locale amqp.Language) (*entities.WebhookAlmanax, error)
+type Repository interface {
+	Get(guildID, channelID string, locale amqp.Language) (*entities.WebhookAlmanax, error)
 	Save(channelWebhook entities.WebhookAlmanax) error
 	Delete(channelWebhook entities.WebhookAlmanax) error
 }
 
-type AlmanaxWebhookRepositoryImpl struct {
+type Impl struct {
 	db databases.MySQLConnection
 }

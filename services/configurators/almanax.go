@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *ConfiguratorServiceImpl) almanaxRequest(message *amqp.RabbitMQMessage, correlationId string) {
+func (service *Impl) almanaxRequest(message *amqp.RabbitMQMessage, correlationId string) {
 	request := message.ConfigurationSetAlmanaxWebhookRequest
 	if !isValidAlmanaxRequest(request) {
 		service.publishFailedSetAnswer(correlationId, message.Language)

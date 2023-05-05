@@ -10,10 +10,8 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func New(broker amqp.MessageBrokerInterface, guildService guilds.GuildService,
-	channelService channels.ChannelService) (*ConfiguratorServiceImpl, error) {
-
-	return &ConfiguratorServiceImpl{
+func New(broker amqp.MessageBroker, guildService guilds.Service, channelService channels.Service) (*Impl, error) {
+	return &Impl{
 		guildService:   guildService,
 		channelService: channelService,
 		broker:         broker,
@@ -28,14 +26,14 @@ func GetBinding() amqp.Binding {
 	}
 }
 
-func (service *ConfiguratorServiceImpl) Consume() error {
+func (service *Impl) Consume() error {
 	log.Info().Msgf("Consuming configurator requests...")
-	return service.broker.Consume(requestQueueName, requestsRoutingkey, service.consume)
+	return service.broker.Consume(requestQueueName, service.consume)
 }
 
-func (service *ConfiguratorServiceImpl) consume(ctx context.Context,
+func (service *Impl) consume(_ context.Context,
 	message *amqp.RabbitMQMessage, correlationId string) {
-
+	//exhaustive:ignore Don't need to be exhaustive here since they will be handled by default case
 	switch message.Type {
 	case amqp.RabbitMQMessage_CONFIGURATION_GET_REQUEST:
 		service.getRequest(message, correlationId)

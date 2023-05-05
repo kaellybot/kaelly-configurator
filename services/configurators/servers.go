@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *ConfiguratorServiceImpl) serverRequest(message *amqp.RabbitMQMessage, correlationId string) {
+func (service *Impl) serverRequest(message *amqp.RabbitMQMessage, correlationId string) {
 	request := message.ConfigurationSetServerRequest
 	if !isValidConfigurationServerRequest(request) {
 		service.publishFailedSetAnswer(correlationId, message.Language)
@@ -41,14 +41,14 @@ func (service *ConfiguratorServiceImpl) serverRequest(message *amqp.RabbitMQMess
 	service.publishSucceededSetAnswer(correlationId, message.Language)
 }
 
-func (service *ConfiguratorServiceImpl) updateGuildServer(guildId, serverId string) error {
+func (service *Impl) updateGuildServer(guildId, serverId string) error {
 	return service.guildService.Save(entities.Guild{
 		Id:       guildId,
 		ServerId: &serverId,
 	})
 }
 
-func (service *ConfiguratorServiceImpl) updateChannelServer(guildId, channelId, serverId string) error {
+func (service *Impl) updateChannelServer(guildId, channelId, serverId string) error {
 	return service.channelService.SaveChannelServer(entities.ChannelServer{
 		GuildId:   guildId,
 		ChannelId: channelId,

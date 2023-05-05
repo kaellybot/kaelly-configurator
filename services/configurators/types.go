@@ -1,8 +1,6 @@
 package configurators
 
 import (
-	"errors"
-
 	amqp "github.com/kaellybot/kaelly-amqp"
 	"github.com/kaellybot/kaelly-configurator/services/channels"
 	"github.com/kaellybot/kaelly-configurator/services/guilds"
@@ -14,16 +12,12 @@ const (
 	answersRoutingkey  = "answers.configs"
 )
 
-var (
-	errInvalidMessage = errors.New("Invalid configurator request message, probably badly built")
-)
-
-type ConfiguratorService interface {
+type Service interface {
 	Consume() error
 }
 
-type ConfiguratorServiceImpl struct {
-	broker         amqp.MessageBrokerInterface
-	guildService   guilds.GuildService
-	channelService channels.ChannelService
+type Impl struct {
+	broker         amqp.MessageBroker
+	guildService   guilds.Service
+	channelService channels.Service
 }

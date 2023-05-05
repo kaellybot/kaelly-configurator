@@ -7,14 +7,14 @@ import (
 	"github.com/kaellybot/kaelly-configurator/services/guilds"
 )
 
-type ApplicationInterface interface {
+type Application interface {
 	Run() error
 	Shutdown()
 }
 
-type Application struct {
-	guildService        guilds.GuildService
-	channelService      channels.ChannelService
-	configuratorService configurators.ConfiguratorService
-	broker              amqp.MessageBrokerInterface
+type Impl struct {
+	guildService        guilds.Service
+	channelService      channels.Service
+	configuratorService configurators.Service
+	broker              amqp.MessageBroker
 }

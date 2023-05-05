@@ -5,11 +5,11 @@ import (
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
 
-type GuildRepository interface {
-	Get(guildId string) (entities.Guild, error)
+type Repository interface {
+	Get(guildID string) (entities.Guild, error)
 	Save(guild entities.Guild) error
 }
 
-type GuildRepositoryImpl struct {
+type Impl struct {
 	db databases.MySQLConnection
 }

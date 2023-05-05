@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *ConfiguratorServiceImpl) twitterRequest(message *amqp.RabbitMQMessage, correlationId string) {
+func (service *Impl) twitterRequest(message *amqp.RabbitMQMessage, correlationId string) {
 	request := message.ConfigurationSetTwitterWebhookRequest
 	if !isValidTwitterRequest(request) {
 		service.publishFailedSetAnswer(correlationId, message.Language)

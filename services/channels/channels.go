@@ -9,10 +9,10 @@ import (
 	"github.com/kaellybot/kaelly-configurator/repositories/twitter"
 )
 
-func New(channelServerRepo servers.ChannelServerRepository, almanaxRepo almanax.AlmanaxWebhookRepository,
-	feedRepo feeds.FeedWebhookRepository, twitterRepo twitter.TwitterWebhookRepository) (*ChannelServiceImpl, error) {
+func New(channelServerRepo servers.Repository, almanaxRepo almanax.Repository,
+	feedRepo feeds.Repository, twitterRepo twitter.Repository) (*Impl, error) {
 
-	return &ChannelServiceImpl{
+	return &Impl{
 		channelServerRepo:  channelServerRepo,
 		almanaxWebhookRepo: almanaxRepo,
 		feedWebhookRepo:    feedRepo,
@@ -20,55 +20,55 @@ func New(channelServerRepo servers.ChannelServerRepository, almanaxRepo almanax.
 	}, nil
 }
 
-func (service *ChannelServiceImpl) GetAlmanaxWebhook(guildId, channelId string,
+func (service *Impl) GetAlmanaxWebhook(guildID, channelID string,
 	locale amqp.Language) (*entities.WebhookAlmanax, error) {
 
-	return service.almanaxWebhookRepo.Get(guildId, channelId, locale)
+	return service.almanaxWebhookRepo.Get(guildID, channelID, locale)
 }
 
-func (service *ChannelServiceImpl) GetFeedWebhook(guildId, channelId, feedTypeId string,
+func (service *Impl) GetFeedWebhook(guildID, channelID, feedTypeID string,
 	locale amqp.Language) (*entities.WebhookFeed, error) {
 
-	return service.feedWebhookRepo.Get(guildId, channelId, feedTypeId, locale)
+	return service.feedWebhookRepo.Get(guildID, channelID, feedTypeID, locale)
 }
 
-func (service *ChannelServiceImpl) GetTwitterWebhook(guildId, channelId string,
+func (service *Impl) GetTwitterWebhook(guildID, channelID string,
 	locale amqp.Language) (*entities.WebhookTwitter, error) {
 
-	return service.twitterWebhookRepo.Get(guildId, channelId, locale)
+	return service.twitterWebhookRepo.Get(guildID, channelID, locale)
 }
 
-func (service *ChannelServiceImpl) SaveChannelServer(channelServer entities.ChannelServer) error {
+func (service *Impl) SaveChannelServer(channelServer entities.ChannelServer) error {
 	return service.channelServerRepo.Save(channelServer)
 }
 
-func (service *ChannelServiceImpl) SaveAlmanaxWebhook(webhook entities.WebhookAlmanax) error {
+func (service *Impl) SaveAlmanaxWebhook(webhook entities.WebhookAlmanax) error {
 	return service.almanaxWebhookRepo.Save(webhook)
 }
 
-func (service *ChannelServiceImpl) SaveFeedWebhook(webhook entities.WebhookFeed) error {
+func (service *Impl) SaveFeedWebhook(webhook entities.WebhookFeed) error {
 	return service.feedWebhookRepo.Save(webhook)
 }
 
-func (service *ChannelServiceImpl) SaveTwitterWebhook(webhook entities.WebhookTwitter) error {
+func (service *Impl) SaveTwitterWebhook(webhook entities.WebhookTwitter) error {
 	return service.twitterWebhookRepo.Save(webhook)
 }
 
-func (service *ChannelServiceImpl) DeleteAlmanaxWebhook(webhook *entities.WebhookAlmanax) error {
+func (service *Impl) DeleteAlmanaxWebhook(webhook *entities.WebhookAlmanax) error {
 	if webhook != nil {
 		return service.almanaxWebhookRepo.Delete(*webhook)
 	}
 	return nil
 }
 
-func (service *ChannelServiceImpl) DeleteFeedWebhook(webhook *entities.WebhookFeed) error {
+func (service *Impl) DeleteFeedWebhook(webhook *entities.WebhookFeed) error {
 	if webhook != nil {
 		return service.feedWebhookRepo.Delete(*webhook)
 	}
 	return nil
 }
 
-func (service *ChannelServiceImpl) DeleteTwitterWebhook(webhook *entities.WebhookTwitter) error {
+func (service *Impl) DeleteTwitterWebhook(webhook *entities.WebhookTwitter) error {
 	if webhook != nil {
 		return service.twitterWebhookRepo.Delete(*webhook)
 	}

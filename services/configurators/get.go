@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *ConfiguratorServiceImpl) getRequest(message *amqp.RabbitMQMessage, correlationId string) {
+func (service *Impl) getRequest(message *amqp.RabbitMQMessage, correlationId string) {
 	request := message.ConfigurationGetRequest
 	if !isValidConfigurationGetRequest(request) {
 		service.publishFailedGetAnswer(correlationId, message.Language)
@@ -32,7 +32,7 @@ func (service *ConfiguratorServiceImpl) getRequest(message *amqp.RabbitMQMessage
 	service.publishSucceededGetAnswer(correlationId, guild, message.Language)
 }
 
-func (service *ConfiguratorServiceImpl) publishSucceededGetAnswer(correlationId string,
+func (service *Impl) publishSucceededGetAnswer(correlationId string,
 	guild entities.Guild, lg amqp.Language) {
 
 	message := amqp.RabbitMQMessage{
@@ -50,7 +50,7 @@ func (service *ConfiguratorServiceImpl) publishSucceededGetAnswer(correlationId 
 	}
 }
 
-func (service *ConfiguratorServiceImpl) publishFailedGetAnswer(correlationId string, lg amqp.Language) {
+func (service *Impl) publishFailedGetAnswer(correlationId string, lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
 		Type:     amqp.RabbitMQMessage_CONFIGURATION_GET_ANSWER,
 		Status:   amqp.RabbitMQMessage_FAILED,

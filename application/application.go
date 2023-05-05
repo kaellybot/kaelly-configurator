@@ -16,14 +16,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-func New() (*Application, error) {
+func New() (*Impl, error) {
 	// misc
 	db, err := databases.New()
 	if err != nil {
 		return nil, err
 	}
 
-	broker, err := amqp.New(constants.RabbitMQClientId, viper.GetString(constants.RabbitMqAddress),
+	broker, err := amqp.New(constants.RabbitMQClientID, viper.GetString(constants.RabbitMQAddress),
 		[]amqp.Binding{configurators.GetBinding()})
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func New() (*Application, error) {
 		return nil, err
 	}
 
-	return &Application{
+	return &Impl{
 		guildService:        guildService,
 		channelService:      channelService,
 		configuratorService: configService,
@@ -60,11 +60,11 @@ func New() (*Application, error) {
 	}, nil
 }
 
-func (app *Application) Run() error {
+func (app *Impl) Run() error {
 	return app.configuratorService.Consume()
 }
 
-func (app *Application) Shutdown() {
+func (app *Impl) Shutdown() {
 	app.broker.Shutdown()
 	log.Info().Msgf("Application is no longer running")
 }

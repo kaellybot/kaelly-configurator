@@ -6,14 +6,14 @@ import (
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
 
-func New(db databases.MySQLConnection) *TwitterWebhookRepositoryImpl {
-	return &TwitterWebhookRepositoryImpl{db: db}
+func New(db databases.MySQLConnection) *Impl {
+	return &Impl{db: db}
 }
 
-func (repo *TwitterWebhookRepositoryImpl) Get(guildId, channelId string, locale amqp.Language) (*entities.WebhookTwitter, error) {
+func (repo *Impl) Get(guildID, channelID string, locale amqp.Language) (*entities.WebhookTwitter, error) {
 	var webhook entities.WebhookTwitter
 	err := repo.db.GetDB().
-		Where("guild_id = ? AND channel_id = ? AND locale = ?", guildId, channelId, locale).
+		Where("guild_id = ? AND channel_id = ? AND locale = ?", guildID, channelID, locale).
 		Limit(1).
 		Find(&webhook).Error
 	if err != nil {
@@ -27,10 +27,10 @@ func (repo *TwitterWebhookRepositoryImpl) Get(guildId, channelId string, locale 
 	return &webhook, nil
 }
 
-func (repo *TwitterWebhookRepositoryImpl) Save(webhook entities.WebhookTwitter) error {
+func (repo *Impl) Save(webhook entities.WebhookTwitter) error {
 	return repo.db.GetDB().Save(&webhook).Error
 }
 
-func (repo *TwitterWebhookRepositoryImpl) Delete(webhook entities.WebhookTwitter) error {
+func (repo *Impl) Delete(webhook entities.WebhookTwitter) error {
 	return repo.db.GetDB().Delete(&webhook).Error
 }

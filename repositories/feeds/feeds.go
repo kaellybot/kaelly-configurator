@@ -6,17 +6,17 @@ import (
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
 
-func New(db databases.MySQLConnection) *FeedWebhookRepositoryImpl {
-	return &FeedWebhookRepositoryImpl{db: db}
+func New(db databases.MySQLConnection) *Impl {
+	return &Impl{db: db}
 }
 
-func (repo *FeedWebhookRepositoryImpl) Get(guildId, channelId, feedTypeId string,
+func (repo *Impl) Get(guildID, channelID, feedTypeID string,
 	locale amqp.Language) (*entities.WebhookFeed, error) {
 
 	var webhook entities.WebhookFeed
 	err := repo.db.GetDB().
 		Where("guild_id = ? AND channel_id = ? AND feed_type_id = ? AND locale = ?",
-			guildId, channelId, feedTypeId, locale).
+			guildID, channelID, feedTypeID, locale).
 		Limit(1).
 		Find(&webhook).Error
 	if err != nil {
@@ -30,10 +30,10 @@ func (repo *FeedWebhookRepositoryImpl) Get(guildId, channelId, feedTypeId string
 	return &webhook, nil
 }
 
-func (repo *FeedWebhookRepositoryImpl) Save(webhook entities.WebhookFeed) error {
+func (repo *Impl) Save(webhook entities.WebhookFeed) error {
 	return repo.db.GetDB().Save(&webhook).Error
 }
 
-func (repo *FeedWebhookRepositoryImpl) Delete(webhook entities.WebhookFeed) error {
+func (repo *Impl) Delete(webhook entities.WebhookFeed) error {
 	return repo.db.GetDB().Delete(&webhook).Error
 }

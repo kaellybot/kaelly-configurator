@@ -9,10 +9,10 @@ import (
 	"github.com/kaellybot/kaelly-configurator/repositories/twitter"
 )
 
-type ChannelService interface {
-	GetAlmanaxWebhook(guildId, channelId string, locale amqp.Language) (*entities.WebhookAlmanax, error)
-	GetFeedWebhook(guildId, channelId, feedTypeId string, locale amqp.Language) (*entities.WebhookFeed, error)
-	GetTwitterWebhook(guildId, channelId string, locale amqp.Language) (*entities.WebhookTwitter, error)
+type Service interface {
+	GetAlmanaxWebhook(guildID, channelID string, locale amqp.Language) (*entities.WebhookAlmanax, error)
+	GetFeedWebhook(guildID, channelID, feedTypeID string, locale amqp.Language) (*entities.WebhookFeed, error)
+	GetTwitterWebhook(guildID, channelID string, locale amqp.Language) (*entities.WebhookTwitter, error)
 	SaveChannelServer(channelServer entities.ChannelServer) error
 	SaveFeedWebhook(webhook entities.WebhookFeed) error
 	SaveTwitterWebhook(webhook entities.WebhookTwitter) error
@@ -22,9 +22,9 @@ type ChannelService interface {
 	DeleteTwitterWebhook(webhook *entities.WebhookTwitter) error
 }
 
-type ChannelServiceImpl struct {
-	channelServerRepo  servers.ChannelServerRepository
-	almanaxWebhookRepo almanax.AlmanaxWebhookRepository
-	feedWebhookRepo    feeds.FeedWebhookRepository
-	twitterWebhookRepo twitter.TwitterWebhookRepository
+type Impl struct {
+	channelServerRepo  servers.Repository
+	almanaxWebhookRepo almanax.Repository
+	feedWebhookRepo    feeds.Repository
+	twitterWebhookRepo twitter.Repository
 }

@@ -5,14 +5,14 @@ import (
 	"github.com/kaellybot/kaelly-configurator/repositories/guilds"
 )
 
-func New(guildRepo guilds.GuildRepository) (*GuildServiceImpl, error) {
-	return &GuildServiceImpl{guildRepo: guildRepo}, nil
+func New(guildRepo guilds.Repository) (*Impl, error) {
+	return &Impl{guildRepo: guildRepo}, nil
 }
 
-func (service *GuildServiceImpl) Get(guildId string) (entities.Guild, error) {
-	return service.guildRepo.Get(guildId)
+func (service *Impl) Get(guildID string) (entities.Guild, error) {
+	return service.guildRepo.Get(guildID)
 }
 
-func (service *GuildServiceImpl) Save(guild entities.Guild) error {
+func (service *Impl) Save(guild entities.Guild) error {
 	return service.guildRepo.Save(guild)
 }

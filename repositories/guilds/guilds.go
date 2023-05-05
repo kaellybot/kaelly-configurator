@@ -5,11 +5,11 @@ import (
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
 
-func New(db databases.MySQLConnection) *GuildRepositoryImpl {
-	return &GuildRepositoryImpl{db: db}
+func New(db databases.MySQLConnection) *Impl {
+	return &Impl{db: db}
 }
 
-func (repo *GuildRepositoryImpl) Get(guildId string) (entities.Guild, error) {
+func (repo *Impl) Get(guildID string) (entities.Guild, error) {
 	var guild entities.Guild
 	return guild, repo.db.GetDB().
 		Preload("ChannelServers").
@@ -19,6 +19,6 @@ func (repo *GuildRepositoryImpl) Get(guildId string) (entities.Guild, error) {
 		First(&guild).Error
 }
 
-func (repo *GuildRepositoryImpl) Save(guild entities.Guild) error {
+func (repo *Impl) Save(guild entities.Guild) error {
 	return repo.db.GetDB().Save(&guild).Error
 }

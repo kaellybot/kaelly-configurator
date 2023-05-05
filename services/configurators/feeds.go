@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *ConfiguratorServiceImpl) rssRequest(message *amqp.RabbitMQMessage, correlationId string) {
+func (service *Impl) rssRequest(message *amqp.RabbitMQMessage, correlationId string) {
 	request := message.ConfigurationSetRssWebhookRequest
 	if !isValidFeedRequest(request) {
 		service.publishFailedSetAnswer(correlationId, message.Language)

@@ -5,10 +5,10 @@ import (
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
 
-type ChannelServerRepository interface {
+type Repository interface {
 	Save(channelServer entities.ChannelServer) error
 }
 
-type ChannelServerRepositoryImpl struct {
+type Impl struct {
 	db databases.MySQLConnection
 }

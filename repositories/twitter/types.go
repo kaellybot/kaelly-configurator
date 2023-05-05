@@ -6,12 +6,12 @@ import (
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
 
-type TwitterWebhookRepository interface {
-	Get(guildId, channelId string, locale amqp.Language) (*entities.WebhookTwitter, error)
+type Repository interface {
+	Get(guildID, channelID string, locale amqp.Language) (*entities.WebhookTwitter, error)
 	Save(channelWebhook entities.WebhookTwitter) error
 	Delete(channelWebhook entities.WebhookTwitter) error
 }
 
-type TwitterWebhookRepositoryImpl struct {
+type Impl struct {
 	db databases.MySQLConnection
 }
