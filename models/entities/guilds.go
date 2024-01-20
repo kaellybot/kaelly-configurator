@@ -8,4 +8,5 @@ type Guild struct {
 	AlmanaxWebhooks []WebhookAlmanax `gorm:"foreignKey:GuildId;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	FeedWebhooks    []WebhookFeed    `gorm:"foreignKey:GuildId;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	TwitterWebhooks []WebhookTwitter `gorm:"foreignKey:GuildId;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	YoutubeWebhooks []WebhookYoutube `gorm:"foreignKey:GuildId;references:Id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }

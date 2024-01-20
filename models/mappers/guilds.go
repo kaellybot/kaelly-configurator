@@ -18,6 +18,7 @@ func MapGuild(guild entities.Guild) *amqp.ConfigurationGetAnswer {
 		AlmanaxWebhooks: mapAlmanaxWebhooks(guild.AlmanaxWebhooks),
 		RssWebhooks:     mapFeedWebhooks(guild.FeedWebhooks),
 		TwitterWebhooks: mapTwitterWebhooks(guild.TwitterWebhooks),
+		YoutubeWebhooks: mapYoutubeWebhooks(guild.YoutubeWebhooks),
 	}
 }
 
@@ -69,6 +70,19 @@ func mapTwitterWebhooks(webhooks []entities.WebhookTwitter) []*amqp.Configuratio
 			WebhookId: webhook.WebhookId,
 			Name:      webhook.TwitterAccount.Name,
 			Language:  webhook.Locale,
+		})
+	}
+
+	return result
+}
+
+func mapYoutubeWebhooks(webhooks []entities.WebhookYoutube) []*amqp.ConfigurationGetAnswer_YoutubeWebhook {
+	result := make([]*amqp.ConfigurationGetAnswer_YoutubeWebhook, 0)
+	for _, webhook := range webhooks {
+		result = append(result, &amqp.ConfigurationGetAnswer_YoutubeWebhook{
+			ChannelId: webhook.ChannelId,
+			WebhookId: webhook.WebhookId,
+			VideastId: webhook.VideastId,
 		})
 	}
 
