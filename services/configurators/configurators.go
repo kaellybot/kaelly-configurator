@@ -45,6 +45,8 @@ func (service *Impl) consume(_ context.Context,
 		service.rssRequest(message, correlationId)
 	case amqp.RabbitMQMessage_CONFIGURATION_SET_TWITTER_WEBHOOK_REQUEST:
 		service.twitterRequest(message, correlationId)
+	case amqp.RabbitMQMessage_CONFIGURATION_SET_YOUTUBE_WEBHOOK_REQUEST:
+		service.youtubeRequest(message, correlationId)
 	default:
 		log.Warn().
 			Str(constants.LogCorrelationId, correlationId).

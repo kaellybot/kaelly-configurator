@@ -7,19 +7,23 @@ import (
 	"github.com/kaellybot/kaelly-configurator/repositories/feeds"
 	"github.com/kaellybot/kaelly-configurator/repositories/servers"
 	"github.com/kaellybot/kaelly-configurator/repositories/twitter"
+	"github.com/kaellybot/kaelly-configurator/repositories/youtube"
 )
 
 type Service interface {
 	GetAlmanaxWebhook(guildID, channelID string, locale amqp.Language) (*entities.WebhookAlmanax, error)
 	GetFeedWebhook(guildID, channelID, feedTypeID string, locale amqp.Language) (*entities.WebhookFeed, error)
 	GetTwitterWebhook(guildID, channelID string, locale amqp.Language) (*entities.WebhookTwitter, error)
+	GetYoutubeWebhook(guildID, channelID, videastID string) (*entities.WebhookYoutube, error)
+	SaveAlmanaxWebhook(webhook entities.WebhookAlmanax) error
 	SaveChannelServer(channelServer entities.ChannelServer) error
 	SaveFeedWebhook(webhook entities.WebhookFeed) error
 	SaveTwitterWebhook(webhook entities.WebhookTwitter) error
-	SaveAlmanaxWebhook(webhook entities.WebhookAlmanax) error
+	SaveYoutubeWebhook(webhook entities.WebhookYoutube) error
 	DeleteAlmanaxWebhook(webhook *entities.WebhookAlmanax) error
 	DeleteFeedWebhook(webhook *entities.WebhookFeed) error
 	DeleteTwitterWebhook(webhook *entities.WebhookTwitter) error
+	DeleteYoutubeWebhook(webhook *entities.WebhookYoutube) error
 }
 
 type Impl struct {
@@ -27,4 +31,5 @@ type Impl struct {
 	almanaxWebhookRepo almanax.Repository
 	feedWebhookRepo    feeds.Repository
 	twitterWebhookRepo twitter.Repository
+	youtubeWebhookRepo youtube.Repository
 }

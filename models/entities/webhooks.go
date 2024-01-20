@@ -38,3 +38,14 @@ type WebhookTwitter struct {
 	RetryNumber    int64          `gorm:"default:0"`
 	UpdatedAt      time.Time
 }
+
+type WebhookYoutube struct {
+	WebhookId    string
+	WebhookToken string
+	GuildId      string  `gorm:"primaryKey"`
+	ChannelId    string  `gorm:"primaryKey"`
+	VideastId    string  `gorm:"primaryKey"`
+	Videast      Videast `gorm:"foreignKey:VideastId"`
+	RetryNumber  int64   `gorm:"default:0"`
+	UpdatedAt    time.Time
+}

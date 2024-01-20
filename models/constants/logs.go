@@ -9,6 +9,7 @@ const (
 	LogGuildId       = "guildId"
 	LogChannelId     = "channelId"
 	LogFeedTypeId    = "feedTypeId"
+	LogVideastId     = "videastId"
 
 	LogLevelFallback = zerolog.InfoLevel
 )
