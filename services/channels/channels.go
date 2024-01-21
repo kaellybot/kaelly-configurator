@@ -6,18 +6,20 @@ import (
 	"github.com/kaellybot/kaelly-configurator/repositories/almanax"
 	"github.com/kaellybot/kaelly-configurator/repositories/feeds"
 	"github.com/kaellybot/kaelly-configurator/repositories/servers"
+	"github.com/kaellybot/kaelly-configurator/repositories/twitch"
 	"github.com/kaellybot/kaelly-configurator/repositories/twitter"
 	"github.com/kaellybot/kaelly-configurator/repositories/youtube"
 )
 
 func New(channelServerRepo servers.Repository, almanaxRepo almanax.Repository,
-	feedRepo feeds.Repository, twitterRepo twitter.Repository,
-	youtubeRepo youtube.Repository) (*Impl, error) {
+	feedRepo feeds.Repository, twitchRepo twitch.Repository,
+	twitterRepo twitter.Repository, youtubeRepo youtube.Repository) (*Impl, error) {
 
 	return &Impl{
 		channelServerRepo:  channelServerRepo,
 		almanaxWebhookRepo: almanaxRepo,
 		feedWebhookRepo:    feedRepo,
+		twitchWebhookRepo:  twitchRepo,
 		twitterWebhookRepo: twitterRepo,
 		youtubeWebhookRepo: youtubeRepo,
 	}, nil
@@ -33,6 +35,12 @@ func (service *Impl) GetFeedWebhook(guildID, channelID, feedTypeID string,
 	locale amqp.Language) (*entities.WebhookFeed, error) {
 
 	return service.feedWebhookRepo.Get(guildID, channelID, feedTypeID, locale)
+}
+
+func (service *Impl) GetTwitchWebhook(guildID, channelID, streamerID string,
+) (*entities.WebhookTwitch, error) {
+
+	return service.twitchWebhookRepo.Get(guildID, channelID, streamerID)
 }
 
 func (service *Impl) GetTwitterWebhook(guildID, channelID string,
@@ -59,6 +67,10 @@ func (service *Impl) SaveFeedWebhook(webhook entities.WebhookFeed) error {
 	return service.feedWebhookRepo.Save(webhook)
 }
 
+func (service *Impl) SaveTwitchWebhook(webhook entities.WebhookTwitch) error {
+	return service.twitchWebhookRepo.Save(webhook)
+}
+
 func (service *Impl) SaveTwitterWebhook(webhook entities.WebhookTwitter) error {
 	return service.twitterWebhookRepo.Save(webhook)
 }
@@ -77,6 +89,13 @@ func (service *Impl) DeleteAlmanaxWebhook(webhook *entities.WebhookAlmanax) erro
 func (service *Impl) DeleteFeedWebhook(webhook *entities.WebhookFeed) error {
 	if webhook != nil {
 		return service.feedWebhookRepo.Delete(*webhook)
+	}
+	return nil
+}
+
+func (service *Impl) DeleteTwitchWebhook(webhook *entities.WebhookTwitch) error {
+	if webhook != nil {
+		return service.twitchWebhookRepo.Delete(*webhook)
 	}
 	return nil
 }

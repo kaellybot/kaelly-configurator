@@ -43,6 +43,8 @@ func (service *Impl) consume(_ context.Context,
 		service.almanaxRequest(message, correlationId)
 	case amqp.RabbitMQMessage_CONFIGURATION_SET_RSS_WEBHOOK_REQUEST:
 		service.rssRequest(message, correlationId)
+	case amqp.RabbitMQMessage_CONFIGURATION_SET_TWITCH_WEBHOOK_REQUEST:
+		service.twitchRequest(message, correlationId)
 	case amqp.RabbitMQMessage_CONFIGURATION_SET_TWITTER_WEBHOOK_REQUEST:
 		service.twitterRequest(message, correlationId)
 	case amqp.RabbitMQMessage_CONFIGURATION_SET_YOUTUBE_WEBHOOK_REQUEST:

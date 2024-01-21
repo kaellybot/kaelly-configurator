@@ -17,6 +17,7 @@ func MapGuild(guild entities.Guild) *amqp.ConfigurationGetAnswer {
 		ChannelServers:  mapChannelServers(guild.ChannelServers),
 		AlmanaxWebhooks: mapAlmanaxWebhooks(guild.AlmanaxWebhooks),
 		RssWebhooks:     mapFeedWebhooks(guild.FeedWebhooks),
+		TwitchWebhooks:  mapTwitchWebhooks(guild.TwitchWebhooks),
 		TwitterWebhooks: mapTwitterWebhooks(guild.TwitterWebhooks),
 		YoutubeWebhooks: mapYoutubeWebhooks(guild.YoutubeWebhooks),
 	}
@@ -56,6 +57,19 @@ func mapFeedWebhooks(webhooks []entities.WebhookFeed) []*amqp.ConfigurationGetAn
 			WebhookId: webhook.WebhookId,
 			FeedId:    webhook.FeedTypeId,
 			Language:  webhook.Locale,
+		})
+	}
+
+	return result
+}
+
+func mapTwitchWebhooks(webhooks []entities.WebhookTwitch) []*amqp.ConfigurationGetAnswer_TwitchWebhook {
+	result := make([]*amqp.ConfigurationGetAnswer_TwitchWebhook, 0)
+	for _, webhook := range webhooks {
+		result = append(result, &amqp.ConfigurationGetAnswer_TwitchWebhook{
+			ChannelId:  webhook.ChannelId,
+			WebhookId:  webhook.WebhookId,
+			StreamerId: webhook.StreamerId,
 		})
 	}
 

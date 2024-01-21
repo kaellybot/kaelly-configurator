@@ -28,6 +28,17 @@ type WebhookFeed struct {
 	UpdatedAt    time.Time
 }
 
+type WebhookTwitch struct {
+	WebhookId    string
+	WebhookToken string
+	GuildId      string  `gorm:"primaryKey"`
+	ChannelId    string  `gorm:"primaryKey"`
+	StreamerId    string  `gorm:"primaryKey"`
+	Streamer      Streamer `gorm:"foreignKey:StreamerId"`
+	RetryNumber  int64   `gorm:"default:0"`
+	UpdatedAt    time.Time
+}
+
 type WebhookTwitter struct {
 	WebhookId      string
 	WebhookToken   string
