@@ -10,7 +10,9 @@ func New(db databases.MySQLConnection) *Impl {
 }
 
 func (repo *Impl) Get(guildID string) (entities.Guild, error) {
-	var guild entities.Guild
+	guild := entities.Guild{
+		Id: guildID,
+	}
 	return guild, repo.db.GetDB().
 		Preload("ChannelServers").
 		Preload("AlmanaxWebhooks").
@@ -18,7 +20,8 @@ func (repo *Impl) Get(guildID string) (entities.Guild, error) {
 		Preload("TwitchWebhooks").
 		Preload("TwitterWebhooks.TwitterAccount").
 		Preload("YoutubeWebhooks").
-		First(&guild).Error
+		Where(entities.Guild{Id: guildID}).
+		Find(&guild).Limit(1).Error
 }
 
 func (repo *Impl) Save(guild entities.Guild) error {
