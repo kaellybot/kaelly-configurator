@@ -1,3 +1,4 @@
+//nolint:dupl,nolintlint // OK for DRY concept but refactor at any cost is not relevant here.
 package configurators
 
 import (
@@ -7,64 +8,64 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *Impl) twitchRequest(message *amqp.RabbitMQMessage, correlationId string) {
+func (service *Impl) twitchRequest(message *amqp.RabbitMQMessage, correlationID string) {
 	request := message.ConfigurationSetTwitchWebhookRequest
 	if !isValidTwitchRequest(request) {
-		service.publishFailedSetAnswer(correlationId, message.Language)
+		service.publishFailedSetAnswer(correlationID, message.Language)
 		return
 	}
 
-	log.Info().Str(constants.LogCorrelationId, correlationId).
-		Str(constants.LogGuildId, request.GuildId).
-		Str(constants.LogChannelId, request.ChannelId).
+	log.Info().Str(constants.LogCorrelationID, correlationID).
+		Str(constants.LogGuildID, request.GuildId).
+		Str(constants.LogChannelID, request.ChannelId).
 		Msgf("Set twitch webhook configuration request received")
 
-	oldWebhook, err := service.channelService.GetTwitchWebhook(request.GuildId, request.ChannelId, request.StreamerId)
-	if err != nil {
-		log.Error().Err(err).Str(constants.LogCorrelationId, correlationId).
-			Str(constants.LogGuildId, request.GuildId).
-			Str(constants.LogChannelId, request.ChannelId).
-			Str(constants.LogStreamerId, request.StreamerId).
+	oldWebhook, errGet := service.channelService.GetTwitchWebhook(request.GuildId, request.ChannelId, request.StreamerId)
+	if errGet != nil {
+		log.Error().Err(errGet).Str(constants.LogCorrelationID, correlationID).
+			Str(constants.LogGuildID, request.GuildId).
+			Str(constants.LogChannelID, request.ChannelId).
+			Str(constants.LogStreamerID, request.StreamerId).
 			Msgf("Twitch webhook retrieval has failed, answering with failed response")
-		service.publishFailedSetWebhookAnswer(correlationId, request.WebhookId, message.Language)
+		service.publishFailedSetWebhookAnswer(correlationID, request.WebhookId, message.Language)
 		return
 	}
 
 	if request.Enabled {
-		err := service.channelService.SaveTwitchWebhook(entities.WebhookTwitch{
-			WebhookId:    request.WebhookId,
+		errSave := service.channelService.SaveTwitchWebhook(entities.WebhookTwitch{
+			WebhookID:    request.WebhookId,
 			WebhookToken: request.WebhookToken,
-			GuildId:      request.GuildId,
-			ChannelId:    request.ChannelId,
-			StreamerId:   request.StreamerId,
+			GuildID:      request.GuildId,
+			ChannelID:    request.ChannelId,
+			StreamerID:   request.StreamerId,
 			RetryNumber:  0,
 		})
-		if err != nil {
-			log.Error().Err(err).Str(constants.LogCorrelationId, correlationId).
-				Str(constants.LogGuildId, request.GuildId).
-				Str(constants.LogChannelId, request.ChannelId).
-				Str(constants.LogStreamerId, request.StreamerId).
+		if errSave != nil {
+			log.Error().Err(errSave).Str(constants.LogCorrelationID, correlationID).
+				Str(constants.LogGuildID, request.GuildId).
+				Str(constants.LogChannelID, request.ChannelId).
+				Str(constants.LogStreamerID, request.StreamerId).
 				Msgf("Twitch webhook save has failed, answering with failed response")
-			service.publishFailedSetWebhookAnswer(correlationId, request.WebhookId, message.Language)
+			service.publishFailedSetWebhookAnswer(correlationID, request.WebhookId, message.Language)
 			return
 		}
 	} else {
-		err := service.channelService.DeleteTwitchWebhook(oldWebhook)
-		if err != nil {
-			log.Error().Err(err).Str(constants.LogCorrelationId, correlationId).
-				Str(constants.LogGuildId, request.GuildId).
-				Str(constants.LogChannelId, request.ChannelId).
-				Str(constants.LogStreamerId, request.StreamerId).
+		errDel := service.channelService.DeleteTwitchWebhook(oldWebhook)
+		if errDel != nil {
+			log.Error().Err(errDel).Str(constants.LogCorrelationID, correlationID).
+				Str(constants.LogGuildID, request.GuildId).
+				Str(constants.LogChannelID, request.ChannelId).
+				Str(constants.LogStreamerID, request.StreamerId).
 				Msgf("Twitch webhook removal has failed, answering with failed response")
-			service.publishFailedSetAnswer(correlationId, message.Language)
+			service.publishFailedSetAnswer(correlationID, message.Language)
 			return
 		}
 	}
 
 	if oldWebhook != nil {
-		service.publishSucceededSetWebhookAnswer(correlationId, oldWebhook.WebhookId, message.Language)
+		service.publishSucceededSetWebhookAnswer(correlationID, oldWebhook.WebhookID, message.Language)
 	} else {
-		service.publishSucceededSetAnswer(correlationId, message.Language)
+		service.publishSucceededSetAnswer(correlationID, message.Language)
 	}
 }
 

@@ -8,33 +8,32 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *Impl) getRequest(message *amqp.RabbitMQMessage, correlationId string) {
+func (service *Impl) getRequest(message *amqp.RabbitMQMessage, correlationID string) {
 	request := message.ConfigurationGetRequest
 	if !isValidConfigurationGetRequest(request) {
-		service.publishFailedGetAnswer(correlationId, message.Language)
+		service.publishFailedGetAnswer(correlationID, message.Language)
 		return
 	}
 
-	log.Info().Str(constants.LogCorrelationId, correlationId).
-		Str(constants.LogGuildId, request.GuildId).
+	log.Info().Str(constants.LogCorrelationID, correlationID).
+		Str(constants.LogGuildID, request.GuildId).
 		Msgf("Get configuration request received")
 
 	guild, err := service.guildService.Get(request.GuildId)
 	if err != nil {
 		log.Error().Err(err).
-			Str(constants.LogCorrelationId, correlationId).
-			Str(constants.LogGuildId, request.GuildId).
+			Str(constants.LogCorrelationID, correlationID).
+			Str(constants.LogGuildID, request.GuildId).
 			Msgf("Returning failed answer")
-		service.publishFailedGetAnswer(correlationId, message.Language)
+		service.publishFailedGetAnswer(correlationID, message.Language)
 		return
 	}
 
-	service.publishSucceededGetAnswer(correlationId, guild, message.Language)
+	service.publishSucceededGetAnswer(correlationID, guild, message.Language)
 }
 
-func (service *Impl) publishSucceededGetAnswer(correlationId string,
+func (service *Impl) publishSucceededGetAnswer(correlationID string,
 	guild entities.Guild, lg amqp.Language) {
-
 	message := amqp.RabbitMQMessage{
 		Type:                   amqp.RabbitMQMessage_CONFIGURATION_GET_ANSWER,
 		Status:                 amqp.RabbitMQMessage_SUCCESS,
@@ -42,25 +41,25 @@ func (service *Impl) publishSucceededGetAnswer(correlationId string,
 		ConfigurationGetAnswer: mappers.MapGuild(guild),
 	}
 
-	err := service.broker.Publish(&message, amqp.ExchangeAnswer, answersRoutingkey, correlationId)
+	err := service.broker.Publish(&message, amqp.ExchangeAnswer, answersRoutingkey, correlationID)
 	if err != nil {
 		log.Error().Err(err).
-			Str(constants.LogCorrelationId, correlationId).
+			Str(constants.LogCorrelationID, correlationID).
 			Msgf("Cannot publish via broker, request ignored")
 	}
 }
 
-func (service *Impl) publishFailedGetAnswer(correlationId string, lg amqp.Language) {
+func (service *Impl) publishFailedGetAnswer(correlationID string, lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
 		Type:     amqp.RabbitMQMessage_CONFIGURATION_GET_ANSWER,
 		Status:   amqp.RabbitMQMessage_FAILED,
 		Language: lg,
 	}
 
-	err := service.broker.Publish(&message, amqp.ExchangeAnswer, answersRoutingkey, correlationId)
+	err := service.broker.Publish(&message, amqp.ExchangeAnswer, answersRoutingkey, correlationID)
 	if err != nil {
 		log.Error().Err(err).
-			Str(constants.LogCorrelationId, correlationId).
+			Str(constants.LogCorrelationID, correlationID).
 			Msgf("Cannot publish via broker, request ignored")
 	}
 }

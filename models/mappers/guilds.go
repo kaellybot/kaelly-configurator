@@ -6,14 +6,14 @@ import (
 )
 
 func MapGuild(guild entities.Guild) *amqp.ConfigurationGetAnswer {
-	serverId := ""
-	if guild.ServerId != nil {
-		serverId = *guild.ServerId
+	serverID := ""
+	if guild.ServerID != nil {
+		serverID = *guild.ServerID
 	}
 
 	return &amqp.ConfigurationGetAnswer{
-		GuildId:         guild.Id,
-		ServerId:        serverId,
+		GuildId:         guild.ID,
+		ServerId:        serverID,
 		ChannelServers:  mapChannelServers(guild.ChannelServers),
 		AlmanaxWebhooks: mapAlmanaxWebhooks(guild.AlmanaxWebhooks),
 		RssWebhooks:     mapFeedWebhooks(guild.FeedWebhooks),
@@ -28,8 +28,8 @@ func mapChannelServers(channelServers []entities.ChannelServer) []*amqp.Configur
 
 	for _, channelServer := range channelServers {
 		result = append(result, &amqp.ConfigurationGetAnswer_ChannelServer{
-			ChannelId: channelServer.ChannelId,
-			ServerId:  channelServer.ServerId,
+			ChannelId: channelServer.ChannelID,
+			ServerId:  channelServer.ServerID,
 		})
 	}
 
@@ -40,8 +40,8 @@ func mapAlmanaxWebhooks(webhooks []entities.WebhookAlmanax) []*amqp.Configuratio
 	result := make([]*amqp.ConfigurationGetAnswer_AlmanaxWebhook, 0)
 	for _, webhook := range webhooks {
 		result = append(result, &amqp.ConfigurationGetAnswer_AlmanaxWebhook{
-			ChannelId: webhook.ChannelId,
-			WebhookId: webhook.WebhookId,
+			ChannelId: webhook.ChannelID,
+			WebhookId: webhook.WebhookID,
 			Language:  webhook.Locale,
 		})
 	}
@@ -53,9 +53,9 @@ func mapFeedWebhooks(webhooks []entities.WebhookFeed) []*amqp.ConfigurationGetAn
 	result := make([]*amqp.ConfigurationGetAnswer_RssWebhook, 0)
 	for _, webhook := range webhooks {
 		result = append(result, &amqp.ConfigurationGetAnswer_RssWebhook{
-			ChannelId: webhook.ChannelId,
-			WebhookId: webhook.WebhookId,
-			FeedId:    webhook.FeedTypeId,
+			ChannelId: webhook.ChannelID,
+			WebhookId: webhook.WebhookID,
+			FeedId:    webhook.FeedTypeID,
 			Language:  webhook.Locale,
 		})
 	}
@@ -67,9 +67,9 @@ func mapTwitchWebhooks(webhooks []entities.WebhookTwitch) []*amqp.ConfigurationG
 	result := make([]*amqp.ConfigurationGetAnswer_TwitchWebhook, 0)
 	for _, webhook := range webhooks {
 		result = append(result, &amqp.ConfigurationGetAnswer_TwitchWebhook{
-			ChannelId:  webhook.ChannelId,
-			WebhookId:  webhook.WebhookId,
-			StreamerId: webhook.StreamerId,
+			ChannelId:  webhook.ChannelID,
+			WebhookId:  webhook.WebhookID,
+			StreamerId: webhook.StreamerID,
 		})
 	}
 
@@ -80,8 +80,8 @@ func mapTwitterWebhooks(webhooks []entities.WebhookTwitter) []*amqp.Configuratio
 	result := make([]*amqp.ConfigurationGetAnswer_TwitterWebhook, 0)
 	for _, webhook := range webhooks {
 		result = append(result, &amqp.ConfigurationGetAnswer_TwitterWebhook{
-			ChannelId: webhook.ChannelId,
-			WebhookId: webhook.WebhookId,
+			ChannelId: webhook.ChannelID,
+			WebhookId: webhook.WebhookID,
 			Name:      webhook.TwitterAccount.Name,
 			Language:  webhook.Locale,
 		})
@@ -94,9 +94,9 @@ func mapYoutubeWebhooks(webhooks []entities.WebhookYoutube) []*amqp.Configuratio
 	result := make([]*amqp.ConfigurationGetAnswer_YoutubeWebhook, 0)
 	for _, webhook := range webhooks {
 		result = append(result, &amqp.ConfigurationGetAnswer_YoutubeWebhook{
-			ChannelId: webhook.ChannelId,
-			WebhookId: webhook.WebhookId,
-			VideastId: webhook.VideastId,
+			ChannelId: webhook.ChannelID,
+			WebhookId: webhook.WebhookID,
+			VideastId: webhook.VideastID,
 		})
 	}
 

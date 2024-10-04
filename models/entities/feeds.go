@@ -5,6 +5,6 @@ import (
 )
 
 type FeedSource struct {
-	FeedTypeId string        `gorm:"primaryKey"`
+	FeedTypeID string        `gorm:"primaryKey"`
 	Locale     amqp.Language `gorm:"primaryKey"`
 }

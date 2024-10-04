@@ -21,7 +21,7 @@ func (repo *Impl) Get(guildID, channelID, videastID string) (*entities.WebhookYo
 	}
 
 	if webhook == (entities.WebhookYoutube{}) {
-		return nil, nil
+		return &webhook, nil
 	}
 
 	return &webhook, nil

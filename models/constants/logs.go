@@ -4,13 +4,13 @@ import "github.com/rs/zerolog"
 
 const (
 	LogFileName      = "fileName"
-	LogCorrelationId = "correlationId"
-	LogServerId      = "serverId"
-	LogGuildId       = "guildId"
-	LogChannelId     = "channelId"
-	LogFeedTypeId    = "feedTypeId"
-	LogVideastId     = "videastId"
-	LogStreamerId    = "streamerId"
+	LogCorrelationID = "correlationID"
+	LogServerID      = "serverID"
+	LogGuildID       = "guildID"
+	LogChannelID     = "channelID"
+	LogFeedTypeID    = "feedTypeID"
+	LogVideastID     = "videastID"
+	LogStreamerID    = "streamerID"
 
 	LogLevelFallback = zerolog.InfoLevel
 )

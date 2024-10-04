@@ -21,7 +21,7 @@ func (repo *Impl) Get(guildID, channelID string, locale amqp.Language) (*entitie
 	}
 
 	if webhook == (entities.WebhookAlmanax{}) {
-		return nil, nil
+		return &webhook, nil
 	}
 
 	return &webhook, nil

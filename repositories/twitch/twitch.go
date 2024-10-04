@@ -21,7 +21,7 @@ func (repo *Impl) Get(guildID, channelID, streamerID string) (*entities.WebhookT
 	}
 
 	if webhook == (entities.WebhookTwitch{}) {
-		return nil, nil
+		return &webhook, nil
 	}
 
 	return &webhook, nil

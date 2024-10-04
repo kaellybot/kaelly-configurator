@@ -14,7 +14,6 @@ import (
 func New(channelServerRepo servers.Repository, almanaxRepo almanax.Repository,
 	feedRepo feeds.Repository, twitchRepo twitch.Repository,
 	twitterRepo twitter.Repository, youtubeRepo youtube.Repository) (*Impl, error) {
-
 	return &Impl{
 		channelServerRepo:  channelServerRepo,
 		almanaxWebhookRepo: almanaxRepo,
@@ -27,31 +26,26 @@ func New(channelServerRepo servers.Repository, almanaxRepo almanax.Repository,
 
 func (service *Impl) GetAlmanaxWebhook(guildID, channelID string,
 	locale amqp.Language) (*entities.WebhookAlmanax, error) {
-
 	return service.almanaxWebhookRepo.Get(guildID, channelID, locale)
 }
 
 func (service *Impl) GetFeedWebhook(guildID, channelID, feedTypeID string,
 	locale amqp.Language) (*entities.WebhookFeed, error) {
-
 	return service.feedWebhookRepo.Get(guildID, channelID, feedTypeID, locale)
 }
 
 func (service *Impl) GetTwitchWebhook(guildID, channelID, streamerID string,
 ) (*entities.WebhookTwitch, error) {
-
 	return service.twitchWebhookRepo.Get(guildID, channelID, streamerID)
 }
 
 func (service *Impl) GetTwitterWebhook(guildID, channelID string,
 	locale amqp.Language) (*entities.WebhookTwitter, error) {
-
 	return service.twitterWebhookRepo.Get(guildID, channelID, locale)
 }
 
 func (service *Impl) GetYoutubeWebhook(guildID, channelID, videastID string,
 ) (*entities.WebhookYoutube, error) {
-
 	return service.youtubeWebhookRepo.Get(guildID, channelID, videastID)
 }
 

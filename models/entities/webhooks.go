@@ -7,43 +7,43 @@ import (
 )
 
 type WebhookAlmanax struct {
-	WebhookId    string
+	WebhookID    string
 	WebhookToken string
-	GuildId      string        `gorm:"primaryKey"`
-	ChannelId    string        `gorm:"primaryKey"`
+	GuildID      string        `gorm:"primaryKey"`
+	ChannelID    string        `gorm:"primaryKey"`
 	Locale       amqp.Language `gorm:"primaryKey"`
 	RetryNumber  int64         `gorm:"default:0"`
 	UpdatedAt    time.Time
 }
 
 type WebhookFeed struct {
-	WebhookId    string
+	WebhookID    string
 	WebhookToken string
-	GuildId      string        `gorm:"primaryKey"`
-	ChannelId    string        `gorm:"primaryKey"`
-	FeedTypeId   string        `gorm:"primaryKey"`
+	GuildID      string        `gorm:"primaryKey"`
+	ChannelID    string        `gorm:"primaryKey"`
+	FeedTypeID   string        `gorm:"primaryKey"`
 	Locale       amqp.Language `gorm:"primaryKey"`
-	FeedSource   FeedSource    `gorm:"foreignKey:FeedTypeId,Locale"`
+	FeedSource   FeedSource    `gorm:"foreignKey:FeedTypeID,Locale"`
 	RetryNumber  int64         `gorm:"default:0"`
 	UpdatedAt    time.Time
 }
 
 type WebhookTwitch struct {
-	WebhookId    string
+	WebhookID    string
 	WebhookToken string
-	GuildId      string  `gorm:"primaryKey"`
-	ChannelId    string  `gorm:"primaryKey"`
-	StreamerId    string  `gorm:"primaryKey"`
-	Streamer      Streamer `gorm:"foreignKey:StreamerId"`
-	RetryNumber  int64   `gorm:"default:0"`
+	GuildID      string   `gorm:"primaryKey"`
+	ChannelID    string   `gorm:"primaryKey"`
+	StreamerID   string   `gorm:"primaryKey"`
+	Streamer     Streamer `gorm:"foreignKey:StreamerID"`
+	RetryNumber  int64    `gorm:"default:0"`
 	UpdatedAt    time.Time
 }
 
 type WebhookTwitter struct {
-	WebhookId      string
+	WebhookID      string
 	WebhookToken   string
-	GuildId        string         `gorm:"primaryKey"`
-	ChannelId      string         `gorm:"primaryKey"`
+	GuildID        string         `gorm:"primaryKey"`
+	ChannelID      string         `gorm:"primaryKey"`
 	Locale         amqp.Language  `gorm:"primaryKey"`
 	TwitterAccount TwitterAccount `gorm:"foreignKey:Locale"`
 	RetryNumber    int64          `gorm:"default:0"`
@@ -51,12 +51,12 @@ type WebhookTwitter struct {
 }
 
 type WebhookYoutube struct {
-	WebhookId    string
+	WebhookID    string
 	WebhookToken string
-	GuildId      string  `gorm:"primaryKey"`
-	ChannelId    string  `gorm:"primaryKey"`
-	VideastId    string  `gorm:"primaryKey"`
-	Videast      Videast `gorm:"foreignKey:VideastId"`
+	GuildID      string  `gorm:"primaryKey"`
+	ChannelID    string  `gorm:"primaryKey"`
+	VideastID    string  `gorm:"primaryKey"`
+	Videast      Videast `gorm:"foreignKey:VideastID"`
 	RetryNumber  int64   `gorm:"default:0"`
 	UpdatedAt    time.Time
 }

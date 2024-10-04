@@ -12,7 +12,6 @@ func New(db databases.MySQLConnection) *Impl {
 
 func (repo *Impl) Get(guildID, channelID, feedTypeID string,
 	locale amqp.Language) (*entities.WebhookFeed, error) {
-
 	var webhook entities.WebhookFeed
 	err := repo.db.GetDB().
 		Where("guild_id = ? AND channel_id = ? AND feed_type_id = ? AND locale = ?",
@@ -24,7 +23,7 @@ func (repo *Impl) Get(guildID, channelID, feedTypeID string,
 	}
 
 	if webhook == (entities.WebhookFeed{}) {
-		return nil, nil
+		return &webhook, nil
 	}
 
 	return &webhook, nil

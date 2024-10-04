@@ -7,65 +7,66 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *Impl) rssRequest(message *amqp.RabbitMQMessage, correlationId string) {
+func (service *Impl) rssRequest(message *amqp.RabbitMQMessage, correlationID string) {
 	request := message.ConfigurationSetRssWebhookRequest
 	if !isValidFeedRequest(request) {
-		service.publishFailedSetAnswer(correlationId, message.Language)
+		service.publishFailedSetAnswer(correlationID, message.Language)
 		return
 	}
 
-	log.Info().Str(constants.LogCorrelationId, correlationId).
-		Str(constants.LogGuildId, request.GuildId).
-		Str(constants.LogChannelId, request.ChannelId).
+	log.Info().Str(constants.LogCorrelationID, correlationID).
+		Str(constants.LogGuildID, request.GuildId).
+		Str(constants.LogChannelID, request.ChannelId).
 		Msgf("Set feed webhook configuration request received")
 
-	oldWebhook, err := service.channelService.GetFeedWebhook(request.GuildId, request.ChannelId, request.FeedId, request.Language)
-	if err != nil {
-		log.Error().Err(err).Str(constants.LogCorrelationId, correlationId).
-			Str(constants.LogGuildId, request.GuildId).
-			Str(constants.LogChannelId, request.ChannelId).
-			Str(constants.LogFeedTypeId, request.FeedId).
+	oldWebhook, errGet := service.channelService.GetFeedWebhook(request.GuildId,
+		request.ChannelId, request.FeedId, request.Language)
+	if errGet != nil {
+		log.Error().Err(errGet).Str(constants.LogCorrelationID, correlationID).
+			Str(constants.LogGuildID, request.GuildId).
+			Str(constants.LogChannelID, request.ChannelId).
+			Str(constants.LogFeedTypeID, request.FeedId).
 			Msgf("Feed webhook retrieval has failed, answering with failed response")
-		service.publishFailedSetWebhookAnswer(correlationId, request.WebhookId, message.Language)
+		service.publishFailedSetWebhookAnswer(correlationID, request.WebhookId, message.Language)
 		return
 	}
 
 	if request.Enabled {
-		err := service.channelService.SaveFeedWebhook(entities.WebhookFeed{
-			WebhookId:    request.WebhookId,
+		errSave := service.channelService.SaveFeedWebhook(entities.WebhookFeed{
+			WebhookID:    request.WebhookId,
 			WebhookToken: request.WebhookToken,
-			GuildId:      request.GuildId,
-			ChannelId:    request.ChannelId,
+			GuildID:      request.GuildId,
+			ChannelID:    request.ChannelId,
 			Locale:       request.Language,
-			FeedTypeId:   request.FeedId,
+			FeedTypeID:   request.FeedId,
 			RetryNumber:  0,
 		})
-		if err != nil {
-			log.Error().Err(err).Str(constants.LogCorrelationId, correlationId).
-				Str(constants.LogGuildId, request.GuildId).
-				Str(constants.LogChannelId, request.ChannelId).
-				Str(constants.LogFeedTypeId, request.FeedId).
+		if errSave != nil {
+			log.Error().Err(errSave).Str(constants.LogCorrelationID, correlationID).
+				Str(constants.LogGuildID, request.GuildId).
+				Str(constants.LogChannelID, request.ChannelId).
+				Str(constants.LogFeedTypeID, request.FeedId).
 				Msgf("Feed webhook save has failed, answering with failed response")
-			service.publishFailedSetWebhookAnswer(correlationId, request.WebhookId, message.Language)
+			service.publishFailedSetWebhookAnswer(correlationID, request.WebhookId, message.Language)
 			return
 		}
 	} else {
-		err := service.channelService.DeleteFeedWebhook(oldWebhook)
-		if err != nil {
-			log.Error().Err(err).Str(constants.LogCorrelationId, correlationId).
-				Str(constants.LogGuildId, request.GuildId).
-				Str(constants.LogChannelId, request.ChannelId).
-				Str(constants.LogFeedTypeId, request.FeedId).
+		errDel := service.channelService.DeleteFeedWebhook(oldWebhook)
+		if errDel != nil {
+			log.Error().Err(errDel).Str(constants.LogCorrelationID, correlationID).
+				Str(constants.LogGuildID, request.GuildId).
+				Str(constants.LogChannelID, request.ChannelId).
+				Str(constants.LogFeedTypeID, request.FeedId).
 				Msgf("Feed webhook removal has failed, answering with failed response")
-			service.publishFailedSetAnswer(correlationId, message.Language)
+			service.publishFailedSetAnswer(correlationID, message.Language)
 			return
 		}
 	}
 
 	if oldWebhook != nil {
-		service.publishSucceededSetWebhookAnswer(correlationId, oldWebhook.WebhookId, message.Language)
+		service.publishSucceededSetWebhookAnswer(correlationID, oldWebhook.WebhookID, message.Language)
 	} else {
-		service.publishSucceededSetAnswer(correlationId, message.Language)
+		service.publishSucceededSetAnswer(correlationID, message.Language)
 	}
 }
 

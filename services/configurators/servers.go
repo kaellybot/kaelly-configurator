@@ -7,17 +7,17 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *Impl) serverRequest(message *amqp.RabbitMQMessage, correlationId string) {
+func (service *Impl) serverRequest(message *amqp.RabbitMQMessage, correlationID string) {
 	request := message.ConfigurationSetServerRequest
 	if !isValidConfigurationServerRequest(request) {
-		service.publishFailedSetAnswer(correlationId, message.Language)
+		service.publishFailedSetAnswer(correlationID, message.Language)
 		return
 	}
 
-	log.Info().Str(constants.LogCorrelationId, correlationId).
-		Str(constants.LogGuildId, request.GuildId).
-		Str(constants.LogChannelId, request.ChannelId).
-		Str(constants.LogServerId, request.ServerId).
+	log.Info().Str(constants.LogCorrelationID, correlationID).
+		Str(constants.LogGuildID, request.GuildId).
+		Str(constants.LogChannelID, request.ChannelId).
+		Str(constants.LogServerID, request.ServerId).
 		Msgf("Set server configuration request received")
 
 	var err error
@@ -29,30 +29,30 @@ func (service *Impl) serverRequest(message *amqp.RabbitMQMessage, correlationId 
 
 	if err != nil {
 		log.Error().Err(err).
-			Str(constants.LogCorrelationId, correlationId).
-			Str(constants.LogGuildId, request.GuildId).
-			Str(constants.LogChannelId, request.ChannelId).
-			Str(constants.LogServerId, request.ServerId).
+			Str(constants.LogCorrelationID, correlationID).
+			Str(constants.LogGuildID, request.GuildId).
+			Str(constants.LogChannelID, request.ChannelId).
+			Str(constants.LogServerID, request.ServerId).
 			Msgf("Returning failed message")
-		service.publishFailedSetAnswer(correlationId, message.Language)
+		service.publishFailedSetAnswer(correlationID, message.Language)
 		return
 	}
 
-	service.publishSucceededSetAnswer(correlationId, message.Language)
+	service.publishSucceededSetAnswer(correlationID, message.Language)
 }
 
-func (service *Impl) updateGuildServer(guildId, serverId string) error {
+func (service *Impl) updateGuildServer(guildID, serverID string) error {
 	return service.guildService.Save(entities.Guild{
-		Id:       guildId,
-		ServerId: &serverId,
+		ID:       guildID,
+		ServerID: &serverID,
 	})
 }
 
-func (service *Impl) updateChannelServer(guildId, channelId, serverId string) error {
+func (service *Impl) updateChannelServer(guildID, channelID, serverID string) error {
 	return service.channelService.SaveChannelServer(entities.ChannelServer{
-		GuildId:   guildId,
-		ChannelId: channelId,
-		ServerId:  serverId,
+		GuildID:   guildID,
+		ChannelID: channelID,
+		ServerID:  serverID,
 	})
 }
 
