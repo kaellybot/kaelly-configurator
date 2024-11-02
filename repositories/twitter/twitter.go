@@ -1,7 +1,6 @@
 package twitter
 
 import (
-	amqp "github.com/kaellybot/kaelly-amqp"
 	"github.com/kaellybot/kaelly-configurator/models/entities"
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
@@ -10,10 +9,11 @@ func New(db databases.MySQLConnection) *Impl {
 	return &Impl{db: db}
 }
 
-func (repo *Impl) Get(guildID, channelID string, locale amqp.Language) (*entities.WebhookTwitter, error) {
+func (repo *Impl) Get(guildID, channelID, twitterID string) (*entities.WebhookTwitter, error) {
 	var webhook entities.WebhookTwitter
 	err := repo.db.GetDB().
-		Where("guild_id = ? AND channel_id = ? AND locale = ?", guildID, channelID, locale).
+		Where("guild_id = ? AND channel_id = ? AND twitter_id = ?",
+			guildID, channelID, twitterID).
 		Limit(1).
 		Find(&webhook).Error
 	if err != nil {

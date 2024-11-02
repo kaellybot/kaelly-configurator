@@ -10,10 +10,12 @@ func New(db databases.MySQLConnection) *Impl {
 	return &Impl{db: db}
 }
 
-func (repo *Impl) Get(guildID, channelID string, locale amqp.Language) (*entities.WebhookAlmanax, error) {
+func (repo *Impl) Get(guildID, channelID string, locale amqp.Language, game amqp.Game,
+) (*entities.WebhookAlmanax, error) {
 	var webhook entities.WebhookAlmanax
 	err := repo.db.GetDB().
-		Where("guild_id = ? AND channel_id = ? AND locale = ?", guildID, channelID, locale).
+		Where("guild_id = ? AND channel_id = ? AND locale = ? AND game = ?",
+			guildID, channelID, locale, game).
 		Limit(1).
 		Find(&webhook).Error
 	if err != nil {

@@ -7,7 +7,8 @@ import (
 )
 
 type Repository interface {
-	Get(guildID, channelID string, locale amqp.Language) (*entities.WebhookAlmanax, error)
+	Get(guildID, channelID string, locale amqp.Language,
+		game amqp.Game) (*entities.WebhookAlmanax, error)
 	Save(channelWebhook entities.WebhookAlmanax) error
 	Delete(channelWebhook entities.WebhookAlmanax) error
 }

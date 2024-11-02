@@ -17,13 +17,15 @@ func (service *Impl) getRequest(message *amqp.RabbitMQMessage, correlationID str
 
 	log.Info().Str(constants.LogCorrelationID, correlationID).
 		Str(constants.LogGuildID, request.GuildId).
+		Str(constants.LogGame, message.Game.String()).
 		Msgf("Get configuration request received")
 
-	guild, err := service.guildService.Get(request.GuildId)
+	guild, err := service.guildService.Get(request.GuildId, message.Game)
 	if err != nil {
 		log.Error().Err(err).
 			Str(constants.LogCorrelationID, correlationID).
 			Str(constants.LogGuildID, request.GuildId).
+			Str(constants.LogGame, message.Game.String()).
 			Msgf("Returning failed answer")
 		service.publishFailedGetAnswer(correlationID, message.Language)
 		return

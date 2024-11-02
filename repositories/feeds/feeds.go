@@ -11,11 +11,11 @@ func New(db databases.MySQLConnection) *Impl {
 }
 
 func (repo *Impl) Get(guildID, channelID, feedTypeID string,
-	locale amqp.Language) (*entities.WebhookFeed, error) {
+	locale amqp.Language, game amqp.Game) (*entities.WebhookFeed, error) {
 	var webhook entities.WebhookFeed
 	err := repo.db.GetDB().
-		Where("guild_id = ? AND channel_id = ? AND feed_type_id = ? AND locale = ?",
-			guildID, channelID, feedTypeID, locale).
+		Where("guild_id = ? AND channel_id = ? AND feed_type_id = ? AND locale = ? AND game = ?",
+			guildID, channelID, feedTypeID, locale, game).
 		Limit(1).
 		Find(&webhook).Error
 	if err != nil {

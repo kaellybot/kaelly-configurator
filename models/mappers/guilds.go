@@ -83,7 +83,6 @@ func mapTwitterWebhooks(webhooks []entities.WebhookTwitter) []*amqp.Configuratio
 			ChannelId: webhook.ChannelID,
 			WebhookId: webhook.WebhookID,
 			Name:      webhook.TwitterAccount.Name,
-			Language:  webhook.Locale,
 		})
 	}
 

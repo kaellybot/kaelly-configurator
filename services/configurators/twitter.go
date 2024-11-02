@@ -18,13 +18,15 @@ func (service *Impl) twitterRequest(message *amqp.RabbitMQMessage, correlationID
 	log.Info().Str(constants.LogCorrelationID, correlationID).
 		Str(constants.LogGuildID, request.GuildId).
 		Str(constants.LogChannelID, request.ChannelId).
+		Str(constants.LogTwitterID, request.TwitterId).
 		Msgf("Set twitter webhook configuration request received")
 
-	oldWebhook, errGet := service.channelService.GetTwitterWebhook(request.GuildId, request.ChannelId, request.Language)
+	oldWebhook, errGet := service.channelService.GetTwitterWebhook(request.GuildId, request.ChannelId, request.TwitterId)
 	if errGet != nil {
 		log.Error().Err(errGet).Str(constants.LogCorrelationID, correlationID).
 			Str(constants.LogGuildID, request.GuildId).
 			Str(constants.LogChannelID, request.ChannelId).
+			Str(constants.LogTwitterID, request.TwitterId).
 			Msgf("Twitter webhook retrieval has failed, answering with failed response")
 		service.publishFailedSetWebhookAnswer(correlationID, request.WebhookId, message.Language)
 		return
@@ -36,13 +38,14 @@ func (service *Impl) twitterRequest(message *amqp.RabbitMQMessage, correlationID
 			WebhookToken: request.WebhookToken,
 			GuildID:      request.GuildId,
 			ChannelID:    request.ChannelId,
-			Locale:       request.Language,
+			TwitterID:    request.TwitterId,
 			RetryNumber:  0,
 		})
 		if errSave != nil {
 			log.Error().Err(errSave).Str(constants.LogCorrelationID, correlationID).
 				Str(constants.LogGuildID, request.GuildId).
 				Str(constants.LogChannelID, request.ChannelId).
+				Str(constants.LogTwitterID, request.TwitterId).
 				Msgf("Twitter webhook save has failed, answering with failed response")
 			service.publishFailedSetWebhookAnswer(correlationID, request.WebhookId, message.Language)
 			return
@@ -53,6 +56,7 @@ func (service *Impl) twitterRequest(message *amqp.RabbitMQMessage, correlationID
 			log.Error().Err(errDel).Str(constants.LogCorrelationID, correlationID).
 				Str(constants.LogGuildID, request.GuildId).
 				Str(constants.LogChannelID, request.ChannelId).
+				Str(constants.LogTwitterID, request.TwitterId).
 				Msgf("Twitter webhook removal has failed, answering with failed response")
 			service.publishFailedSetAnswer(correlationID, message.Language)
 			return

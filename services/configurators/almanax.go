@@ -18,13 +18,16 @@ func (service *Impl) almanaxRequest(message *amqp.RabbitMQMessage, correlationID
 	log.Info().Str(constants.LogCorrelationID, correlationID).
 		Str(constants.LogGuildID, request.GuildId).
 		Str(constants.LogChannelID, request.ChannelId).
+		Str(constants.LogGame, message.Game.String()).
 		Msgf("Set almanax webhook configuration request received")
 
-	oldWebhook, errGet := service.channelService.GetAlmanaxWebhook(request.GuildId, request.ChannelId, request.Language)
+	oldWebhook, errGet := service.channelService.GetAlmanaxWebhook(request.GuildId, request.ChannelId,
+		request.Language, message.GetGame())
 	if errGet != nil {
 		log.Error().Err(errGet).Str(constants.LogCorrelationID, correlationID).
 			Str(constants.LogGuildID, request.GuildId).
 			Str(constants.LogChannelID, request.ChannelId).
+			Str(constants.LogGame, message.Game.String()).
 			Msgf("Almanax webhook retrieval has failed, answering with failed response")
 		service.publishFailedSetWebhookAnswer(correlationID, request.WebhookId, message.Language)
 		return
@@ -37,12 +40,14 @@ func (service *Impl) almanaxRequest(message *amqp.RabbitMQMessage, correlationID
 			GuildID:      request.GuildId,
 			ChannelID:    request.ChannelId,
 			Locale:       request.Language,
+			Game:         message.Game,
 			RetryNumber:  0,
 		})
 		if errSave != nil {
 			log.Error().Err(errSave).Str(constants.LogCorrelationID, correlationID).
 				Str(constants.LogGuildID, request.GuildId).
 				Str(constants.LogChannelID, request.ChannelId).
+				Str(constants.LogGame, message.Game.String()).
 				Msgf("Almanax webhook save has failed, answering with failed response")
 			service.publishFailedSetWebhookAnswer(correlationID, request.WebhookId, message.Language)
 			return
@@ -53,6 +58,7 @@ func (service *Impl) almanaxRequest(message *amqp.RabbitMQMessage, correlationID
 			log.Error().Err(errDel).Str(constants.LogCorrelationID, correlationID).
 				Str(constants.LogGuildID, request.GuildId).
 				Str(constants.LogChannelID, request.ChannelId).
+				Str(constants.LogGame, message.Game.String()).
 				Msgf("Almanax webhook removal has failed, answering with failed response")
 			service.publishFailedSetAnswer(correlationID, message.Language)
 			return

@@ -12,6 +12,7 @@ type WebhookAlmanax struct {
 	GuildID      string        `gorm:"primaryKey"`
 	ChannelID    string        `gorm:"primaryKey"`
 	Locale       amqp.Language `gorm:"primaryKey"`
+	Game         amqp.Game     `gorm:"primaryKey"`
 	RetryNumber  int64         `gorm:"default:0"`
 	UpdatedAt    time.Time
 }
@@ -23,6 +24,7 @@ type WebhookFeed struct {
 	ChannelID    string        `gorm:"primaryKey"`
 	FeedTypeID   string        `gorm:"primaryKey"`
 	Locale       amqp.Language `gorm:"primaryKey"`
+	Game         amqp.Game     `gorm:"primaryKey"`
 	FeedSource   FeedSource    `gorm:"foreignKey:FeedTypeID,Locale"`
 	RetryNumber  int64         `gorm:"default:0"`
 	UpdatedAt    time.Time
@@ -44,8 +46,8 @@ type WebhookTwitter struct {
 	WebhookToken   string
 	GuildID        string         `gorm:"primaryKey"`
 	ChannelID      string         `gorm:"primaryKey"`
-	Locale         amqp.Language  `gorm:"primaryKey"`
-	TwitterAccount TwitterAccount `gorm:"foreignKey:Locale"`
+	TwitterID      string         `gorm:"primaryKey"`
+	TwitterAccount TwitterAccount `gorm:"foreignKey:ID"`
 	RetryNumber    int64          `gorm:"default:0"`
 	UpdatedAt      time.Time
 }

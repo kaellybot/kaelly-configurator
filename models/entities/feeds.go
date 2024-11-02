@@ -7,4 +7,5 @@ import (
 type FeedSource struct {
 	FeedTypeID string        `gorm:"primaryKey"`
 	Locale     amqp.Language `gorm:"primaryKey"`
+	Game       amqp.Game     `gorm:"primaryKey"`
 }

@@ -5,6 +5,8 @@ import (
 )
 
 type TwitterAccount struct {
+	ID     string `gorm:"primaryKey"`
 	Name   string
-	Locale amqp.Language `gorm:"primaryKey"`
+	Locale amqp.Language
+	Game   amqp.Game
 }
