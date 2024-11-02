@@ -82,7 +82,7 @@ func mapTwitterWebhooks(webhooks []entities.WebhookTwitter) []*amqp.Configuratio
 		result = append(result, &amqp.ConfigurationGetAnswer_TwitterWebhook{
 			ChannelId: webhook.ChannelID,
 			WebhookId: webhook.WebhookID,
-			Name:      webhook.TwitterAccount.Name,
+			TwitterId: webhook.TwitterAccount.ID,
 		})
 	}
 

@@ -25,7 +25,7 @@ type WebhookFeed struct {
 	FeedTypeID   string        `gorm:"primaryKey"`
 	Locale       amqp.Language `gorm:"primaryKey"`
 	Game         amqp.Game     `gorm:"primaryKey"`
-	FeedSource   FeedSource    `gorm:"foreignKey:FeedTypeID,Locale"`
+	FeedSource   FeedSource    `gorm:"foreignKey:FeedTypeID,Locale,Game"`
 	RetryNumber  int64         `gorm:"default:0"`
 	UpdatedAt    time.Time
 }
@@ -47,7 +47,7 @@ type WebhookTwitter struct {
 	GuildID        string         `gorm:"primaryKey"`
 	ChannelID      string         `gorm:"primaryKey"`
 	TwitterID      string         `gorm:"primaryKey"`
-	TwitterAccount TwitterAccount `gorm:"foreignKey:ID"`
+	TwitterAccount TwitterAccount `gorm:"foreignKey:TwitterID"`
 	RetryNumber    int64          `gorm:"default:0"`
 	UpdatedAt      time.Time
 }
