@@ -39,6 +39,7 @@ func (service *Impl) twitterRequest(message *amqp.RabbitMQMessage, correlationID
 			GuildID:      request.GuildId,
 			ChannelID:    request.ChannelId,
 			TwitterID:    request.TwitterId,
+			Locale:       message.Language,
 			RetryNumber:  0,
 		})
 		if errSave != nil {

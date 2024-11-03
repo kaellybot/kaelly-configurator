@@ -21,7 +21,7 @@ func (service *Impl) rssRequest(message *amqp.RabbitMQMessage, correlationID str
 		Msgf("Set feed webhook configuration request received")
 
 	oldWebhook, errGet := service.channelService.GetFeedWebhook(request.GuildId,
-		request.ChannelId, request.FeedId, request.Language, message.GetGame())
+		request.ChannelId, request.FeedId, message.GetGame())
 	if errGet != nil {
 		log.Error().Err(errGet).Str(constants.LogCorrelationID, correlationID).
 			Str(constants.LogGuildID, request.GuildId).
@@ -39,8 +39,8 @@ func (service *Impl) rssRequest(message *amqp.RabbitMQMessage, correlationID str
 			WebhookToken: request.WebhookToken,
 			GuildID:      request.GuildId,
 			ChannelID:    request.ChannelId,
-			Locale:       request.Language,
 			FeedTypeID:   request.FeedId,
+			Locale:       message.Language,
 			Game:         message.Game,
 			RetryNumber:  0,
 		})

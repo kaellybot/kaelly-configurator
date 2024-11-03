@@ -38,6 +38,7 @@ func (service *Impl) youtubeRequest(message *amqp.RabbitMQMessage, correlationID
 			GuildID:      request.GuildId,
 			ChannelID:    request.ChannelId,
 			VideastID:    request.VideastId,
+			Locale:       message.Language,
 			RetryNumber:  0,
 		})
 		if errSave != nil {

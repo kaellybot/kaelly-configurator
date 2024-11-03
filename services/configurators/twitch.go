@@ -38,6 +38,7 @@ func (service *Impl) twitchRequest(message *amqp.RabbitMQMessage, correlationID 
 			GuildID:      request.GuildId,
 			ChannelID:    request.ChannelId,
 			StreamerID:   request.StreamerId,
+			Locale:       message.Language,
 			RetryNumber:  0,
 		})
 		if errSave != nil {

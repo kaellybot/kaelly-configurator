@@ -21,8 +21,8 @@ func (service *Impl) almanaxRequest(message *amqp.RabbitMQMessage, correlationID
 		Str(constants.LogGame, message.Game.String()).
 		Msgf("Set almanax webhook configuration request received")
 
-	oldWebhook, errGet := service.channelService.GetAlmanaxWebhook(request.GuildId, request.ChannelId,
-		request.Language, message.GetGame())
+	oldWebhook, errGet := service.channelService.GetAlmanaxWebhook(request.GuildId,
+		request.ChannelId, message.GetGame())
 	if errGet != nil {
 		log.Error().Err(errGet).Str(constants.LogCorrelationID, correlationID).
 			Str(constants.LogGuildID, request.GuildId).
@@ -39,7 +39,7 @@ func (service *Impl) almanaxRequest(message *amqp.RabbitMQMessage, correlationID
 			WebhookToken: request.WebhookToken,
 			GuildID:      request.GuildId,
 			ChannelID:    request.ChannelId,
-			Locale:       request.Language,
+			Locale:       message.Language,
 			Game:         message.Game,
 			RetryNumber:  0,
 		})

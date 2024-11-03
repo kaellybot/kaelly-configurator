@@ -12,8 +12,8 @@ import (
 )
 
 type Service interface {
-	GetAlmanaxWebhook(guildID, channelID string, locale amqp.Language, game amqp.Game) (*entities.WebhookAlmanax, error)
-	GetFeedWebhook(guildID, channelID, feedTypeID string, locale amqp.Language, game amqp.Game) (*entities.WebhookFeed, error)
+	GetAlmanaxWebhook(guildID, channelID string, game amqp.Game) (*entities.WebhookAlmanax, error)
+	GetFeedWebhook(guildID, channelID, feedTypeID string, game amqp.Game) (*entities.WebhookFeed, error)
 	GetTwitchWebhook(guildID, channelID, streamerID string) (*entities.WebhookTwitch, error)
 	GetTwitterWebhook(guildID, channelID, twitterID string) (*entities.WebhookTwitter, error)
 	GetYoutubeWebhook(guildID, channelID, videastID string) (*entities.WebhookYoutube, error)

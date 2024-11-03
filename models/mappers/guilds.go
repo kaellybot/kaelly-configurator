@@ -42,7 +42,6 @@ func mapAlmanaxWebhooks(webhooks []entities.WebhookAlmanax) []*amqp.Configuratio
 		result = append(result, &amqp.ConfigurationGetAnswer_AlmanaxWebhook{
 			ChannelId: webhook.ChannelID,
 			WebhookId: webhook.WebhookID,
-			Language:  webhook.Locale,
 		})
 	}
 
@@ -56,7 +55,6 @@ func mapFeedWebhooks(webhooks []entities.WebhookFeed) []*amqp.ConfigurationGetAn
 			ChannelId: webhook.ChannelID,
 			WebhookId: webhook.WebhookID,
 			FeedId:    webhook.FeedTypeID,
-			Language:  webhook.Locale,
 		})
 	}
 
