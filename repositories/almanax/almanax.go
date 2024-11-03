@@ -34,5 +34,9 @@ func (repo *Impl) Save(webhook entities.WebhookAlmanax) error {
 }
 
 func (repo *Impl) Delete(webhook entities.WebhookAlmanax) error {
-	return repo.db.GetDB().Delete(&webhook).Error
+	if webhook != (entities.WebhookAlmanax{}) {
+		return repo.db.GetDB().Delete(&webhook).Error
+	}
+
+	return nil
 }

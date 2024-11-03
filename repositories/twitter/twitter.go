@@ -32,5 +32,9 @@ func (repo *Impl) Save(webhook entities.WebhookTwitter) error {
 }
 
 func (repo *Impl) Delete(webhook entities.WebhookTwitter) error {
-	return repo.db.GetDB().Delete(&webhook).Error
+	if webhook != (entities.WebhookTwitter{}) {
+		return repo.db.GetDB().Delete(&webhook).Error
+	}
+
+	return nil
 }

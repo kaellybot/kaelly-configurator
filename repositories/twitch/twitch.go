@@ -32,5 +32,9 @@ func (repo *Impl) Save(webhook entities.WebhookTwitch) error {
 }
 
 func (repo *Impl) Delete(webhook entities.WebhookTwitch) error {
-	return repo.db.GetDB().Delete(&webhook).Error
+	if webhook != (entities.WebhookTwitch{}) {
+		return repo.db.GetDB().Delete(&webhook).Error
+	}
+
+	return nil
 }

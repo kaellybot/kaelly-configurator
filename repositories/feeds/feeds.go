@@ -34,5 +34,9 @@ func (repo *Impl) Save(webhook entities.WebhookFeed) error {
 }
 
 func (repo *Impl) Delete(webhook entities.WebhookFeed) error {
-	return repo.db.GetDB().Delete(&webhook).Error
+	if webhook != (entities.WebhookFeed{}) {
+		return repo.db.GetDB().Delete(&webhook).Error
+	}
+
+	return nil
 }
