@@ -3,10 +3,11 @@ package configurators
 import (
 	amqp "github.com/kaellybot/kaelly-amqp"
 	"github.com/kaellybot/kaelly-configurator/models/constants"
+	"github.com/kaellybot/kaelly-configurator/utils/replies"
 	"github.com/rs/zerolog/log"
 )
 
-func (service *Impl) publishSucceededSetWebhookAnswer(correlationID, webhookID string,
+func (service *Impl) publishSucceededSetWebhookAnswer(ctx amqp.Context, webhookID string,
 	lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
 		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_ANSWER,
@@ -18,15 +19,10 @@ func (service *Impl) publishSucceededSetWebhookAnswer(correlationID, webhookID s
 		},
 	}
 
-	err := service.broker.Publish(&message, amqp.ExchangeAnswer, answersRoutingkey, correlationID)
-	if err != nil {
-		log.Error().Err(err).
-			Str(constants.LogCorrelationID, correlationID).
-			Msgf("Cannot publish via broker, request ignored")
-	}
+	replies.SucceededAnswer(ctx, service.broker, &message)
 }
 
-func (service *Impl) publishSucceededSetAnswer(correlationID string, lg amqp.Language) {
+func (service *Impl) publishSucceededSetAnswer(ctx amqp.Context, lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
 		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_ANSWER,
 		Status:   amqp.RabbitMQMessage_SUCCESS,
@@ -36,15 +32,10 @@ func (service *Impl) publishSucceededSetAnswer(correlationID string, lg amqp.Lan
 		},
 	}
 
-	err := service.broker.Publish(&message, amqp.ExchangeAnswer, answersRoutingkey, correlationID)
-	if err != nil {
-		log.Error().Err(err).
-			Str(constants.LogCorrelationID, correlationID).
-			Msgf("Cannot publish via broker, request ignored")
-	}
+	replies.SucceededAnswer(ctx, service.broker, &message)
 }
 
-func (service *Impl) publishFailedSetWebhookAnswer(correlationID, webhookID string,
+func (service *Impl) publishFailedSetWebhookAnswer(ctx amqp.Context, webhookID string,
 	lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
 		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_ANSWER,
@@ -56,15 +47,15 @@ func (service *Impl) publishFailedSetWebhookAnswer(correlationID, webhookID stri
 		},
 	}
 
-	err := service.broker.Publish(&message, amqp.ExchangeAnswer, answersRoutingkey, correlationID)
+	err := service.broker.Reply(&message, ctx.CorrelationID, ctx.ReplyTo)
 	if err != nil {
 		log.Error().Err(err).
-			Str(constants.LogCorrelationID, correlationID).
+			Str(constants.LogCorrelationID, ctx.CorrelationID).
 			Msgf("Cannot publish via broker, request ignored")
 	}
 }
 
-func (service *Impl) publishFailedSetAnswer(correlationID string, lg amqp.Language) {
+func (service *Impl) publishFailedSetAnswer(ctx amqp.Context, lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
 		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_ANSWER,
 		Status:   amqp.RabbitMQMessage_FAILED,
@@ -74,10 +65,10 @@ func (service *Impl) publishFailedSetAnswer(correlationID string, lg amqp.Langua
 		},
 	}
 
-	err := service.broker.Publish(&message, amqp.ExchangeAnswer, answersRoutingkey, correlationID)
+	err := service.broker.Reply(&message, ctx.CorrelationID, ctx.ReplyTo)
 	if err != nil {
 		log.Error().Err(err).
-			Str(constants.LogCorrelationID, correlationID).
+			Str(constants.LogCorrelationID, ctx.CorrelationID).
 			Msgf("Cannot publish via broker, request ignored")
 	}
 }

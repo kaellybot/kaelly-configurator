@@ -7,14 +7,14 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *Impl) serverRequest(message *amqp.RabbitMQMessage, correlationID string) {
+func (service *Impl) serverRequest(ctx amqp.Context, message *amqp.RabbitMQMessage) {
 	request := message.ConfigurationSetServerRequest
 	if !isValidConfigurationServerRequest(request) {
-		service.publishFailedSetAnswer(correlationID, message.Language)
+		service.publishFailedSetAnswer(ctx, message.Language)
 		return
 	}
 
-	log.Info().Str(constants.LogCorrelationID, correlationID).
+	log.Info().Str(constants.LogCorrelationID, ctx.CorrelationID).
 		Str(constants.LogGuildID, request.GuildId).
 		Str(constants.LogChannelID, request.ChannelId).
 		Str(constants.LogServerID, request.ServerId).
@@ -30,17 +30,17 @@ func (service *Impl) serverRequest(message *amqp.RabbitMQMessage, correlationID 
 
 	if err != nil {
 		log.Error().Err(err).
-			Str(constants.LogCorrelationID, correlationID).
+			Str(constants.LogCorrelationID, ctx.CorrelationID).
 			Str(constants.LogGuildID, request.GuildId).
 			Str(constants.LogChannelID, request.ChannelId).
 			Str(constants.LogServerID, request.ServerId).
 			Str(constants.LogGame, message.Game.String()).
 			Msgf("Returning failed message")
-		service.publishFailedSetAnswer(correlationID, message.Language)
+		service.publishFailedSetAnswer(ctx, message.Language)
 		return
 	}
 
-	service.publishSucceededSetAnswer(correlationID, message.Language)
+	service.publishSucceededSetAnswer(ctx, message.Language)
 }
 
 func (service *Impl) updateGuildServer(guildID, serverID string, game amqp.Game) error {

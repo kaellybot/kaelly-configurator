@@ -9,7 +9,6 @@ import (
 const (
 	requestQueueName   = "configurator-requests"
 	requestsRoutingkey = "requests.configs"
-	answersRoutingkey  = "answers.configs"
 )
 
 type Service interface {

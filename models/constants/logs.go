@@ -6,6 +6,7 @@ const (
 	LogFileName      = "fileName"
 	LogGame          = "game"
 	LogCorrelationID = "correlationID"
+	LogReplyTo       = "replyTo"
 	LogServerID      = "serverID"
 	LogGuildID       = "guildID"
 	LogChannelID     = "channelID"

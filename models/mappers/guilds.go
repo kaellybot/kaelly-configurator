@@ -5,21 +5,26 @@ import (
 	"github.com/kaellybot/kaelly-configurator/models/entities"
 )
 
-func MapGuild(guild entities.Guild) *amqp.ConfigurationGetAnswer {
+func MapGuild(guild entities.Guild, langage amqp.Language) *amqp.RabbitMQMessage {
 	serverID := ""
 	if guild.ServerID != nil {
 		serverID = *guild.ServerID
 	}
 
-	return &amqp.ConfigurationGetAnswer{
-		GuildId:         guild.ID,
-		ServerId:        serverID,
-		ChannelServers:  mapChannelServers(guild.ChannelServers),
-		AlmanaxWebhooks: mapAlmanaxWebhooks(guild.AlmanaxWebhooks),
-		RssWebhooks:     mapFeedWebhooks(guild.FeedWebhooks),
-		TwitchWebhooks:  mapTwitchWebhooks(guild.TwitchWebhooks),
-		TwitterWebhooks: mapTwitterWebhooks(guild.TwitterWebhooks),
-		YoutubeWebhooks: mapYoutubeWebhooks(guild.YoutubeWebhooks),
+	return &amqp.RabbitMQMessage{
+		Type:     amqp.RabbitMQMessage_CONFIGURATION_GET_ANSWER,
+		Status:   amqp.RabbitMQMessage_SUCCESS,
+		Language: langage,
+		ConfigurationGetAnswer: &amqp.ConfigurationGetAnswer{
+			GuildId:         guild.ID,
+			ServerId:        serverID,
+			ChannelServers:  mapChannelServers(guild.ChannelServers),
+			AlmanaxWebhooks: mapAlmanaxWebhooks(guild.AlmanaxWebhooks),
+			RssWebhooks:     mapFeedWebhooks(guild.FeedWebhooks),
+			TwitchWebhooks:  mapTwitchWebhooks(guild.TwitchWebhooks),
+			TwitterWebhooks: mapTwitterWebhooks(guild.TwitterWebhooks),
+			YoutubeWebhooks: mapYoutubeWebhooks(guild.YoutubeWebhooks),
+		},
 	}
 }
 

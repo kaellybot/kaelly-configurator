@@ -7,14 +7,14 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *Impl) rssRequest(message *amqp.RabbitMQMessage, correlationID string) {
+func (service *Impl) rssRequest(ctx amqp.Context, message *amqp.RabbitMQMessage) {
 	request := message.ConfigurationSetRssWebhookRequest
 	if !isValidFeedRequest(request) {
-		service.publishFailedSetAnswer(correlationID, message.Language)
+		service.publishFailedSetAnswer(ctx, message.Language)
 		return
 	}
 
-	log.Info().Str(constants.LogCorrelationID, correlationID).
+	log.Info().Str(constants.LogCorrelationID, ctx.CorrelationID).
 		Str(constants.LogGuildID, request.GuildId).
 		Str(constants.LogChannelID, request.ChannelId).
 		Str(constants.LogGame, message.Game.String()).
@@ -23,13 +23,13 @@ func (service *Impl) rssRequest(message *amqp.RabbitMQMessage, correlationID str
 	oldWebhook, errGet := service.channelService.GetFeedWebhook(request.GuildId,
 		request.ChannelId, request.FeedId, message.GetGame())
 	if errGet != nil {
-		log.Error().Err(errGet).Str(constants.LogCorrelationID, correlationID).
+		log.Error().Err(errGet).Str(constants.LogCorrelationID, ctx.CorrelationID).
 			Str(constants.LogGuildID, request.GuildId).
 			Str(constants.LogChannelID, request.ChannelId).
 			Str(constants.LogFeedTypeID, request.FeedId).
 			Str(constants.LogGame, message.Game.String()).
 			Msgf("Feed webhook retrieval has failed, answering with failed response")
-		service.publishFailedSetWebhookAnswer(correlationID, request.WebhookId, message.Language)
+		service.publishFailedSetWebhookAnswer(ctx, request.WebhookId, message.Language)
 		return
 	}
 
@@ -45,33 +45,33 @@ func (service *Impl) rssRequest(message *amqp.RabbitMQMessage, correlationID str
 			RetryNumber:  0,
 		})
 		if errSave != nil {
-			log.Error().Err(errSave).Str(constants.LogCorrelationID, correlationID).
+			log.Error().Err(errSave).Str(constants.LogCorrelationID, ctx.CorrelationID).
 				Str(constants.LogGuildID, request.GuildId).
 				Str(constants.LogChannelID, request.ChannelId).
 				Str(constants.LogFeedTypeID, request.FeedId).
 				Str(constants.LogGame, message.Game.String()).
 				Msgf("Feed webhook save has failed, answering with failed response")
-			service.publishFailedSetWebhookAnswer(correlationID, request.WebhookId, message.Language)
+			service.publishFailedSetWebhookAnswer(ctx, request.WebhookId, message.Language)
 			return
 		}
 	} else {
 		errDel := service.channelService.DeleteFeedWebhook(oldWebhook)
 		if errDel != nil {
-			log.Error().Err(errDel).Str(constants.LogCorrelationID, correlationID).
+			log.Error().Err(errDel).Str(constants.LogCorrelationID, ctx.CorrelationID).
 				Str(constants.LogGuildID, request.GuildId).
 				Str(constants.LogChannelID, request.ChannelId).
 				Str(constants.LogFeedTypeID, request.FeedId).
 				Str(constants.LogGame, message.Game.String()).
 				Msgf("Feed webhook removal has failed, answering with failed response")
-			service.publishFailedSetAnswer(correlationID, message.Language)
+			service.publishFailedSetAnswer(ctx, message.Language)
 			return
 		}
 	}
 
 	if oldWebhook != nil {
-		service.publishSucceededSetWebhookAnswer(correlationID, oldWebhook.WebhookID, message.Language)
+		service.publishSucceededSetWebhookAnswer(ctx, oldWebhook.WebhookID, message.Language)
 	} else {
-		service.publishSucceededSetAnswer(correlationID, message.Language)
+		service.publishSucceededSetAnswer(ctx, message.Language)
 	}
 }
 
