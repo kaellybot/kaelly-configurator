@@ -14,19 +14,18 @@ import (
 	"github.com/kaellybot/kaelly-configurator/services/configurators"
 	"github.com/kaellybot/kaelly-configurator/services/guilds"
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
+	"github.com/kaellybot/kaelly-configurator/utils/insights"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )
 
 func New() (*Impl, error) {
 	// misc
-	db, err := databases.New()
-	if err != nil {
-		return nil, err
-	}
-
 	broker := amqp.New(constants.RabbitMQClientID, viper.GetString(constants.RabbitMQAddress),
 		amqp.WithBindings(configurators.GetBinding()))
+	db := databases.New()
+	probes := insights.NewProbes(broker.IsConnected, db.IsConnected)
+	prom := insights.NewPrometheusMetrics()
 
 	// repositories
 	guildRepo := guildRepo.New(db)
@@ -58,10 +57,20 @@ func New() (*Impl, error) {
 		channelService:      channelService,
 		configuratorService: configService,
 		broker:              broker,
+		db:                  db,
+		probes:              probes,
+		prom:                prom,
 	}, nil
 }
 
 func (app *Impl) Run() error {
+	app.probes.ListenAndServe()
+	app.prom.ListenAndServe()
+
+	if err := app.db.Run(); err != nil {
+		return err
+	}
+
 	if err := app.broker.Run(); err != nil {
 		return err
 	}
@@ -72,5 +81,8 @@ func (app *Impl) Run() error {
 
 func (app *Impl) Shutdown() {
 	app.broker.Shutdown()
+	app.db.Shutdown()
+	app.prom.Shutdown()
+	app.probes.Shutdown()
 	log.Info().Msgf("Application is no longer running")
 }
