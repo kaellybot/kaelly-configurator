@@ -7,18 +7,19 @@ import (
 )
 
 type WebhookAlmanax struct {
-	WebhookID    string
+	WebhookID    string `gorm:"unique;not null"`
 	WebhookToken string
 	GuildID      string    `gorm:"primaryKey"`
 	ChannelID    string    `gorm:"primaryKey"`
 	Game         amqp.Game `gorm:"primaryKey"`
 	Locale       amqp.Language
 	RetryNumber  int64 `gorm:"default:0"`
-	UpdatedAt    time.Time
+	PublishedAt  *time.Time
+	FailedAt     *time.Time
 }
 
 type WebhookFeed struct {
-	WebhookID    string
+	WebhookID    string `gorm:"unique;not null"`
 	WebhookToken string
 	GuildID      string    `gorm:"primaryKey"`
 	ChannelID    string    `gorm:"primaryKey"`
@@ -27,11 +28,12 @@ type WebhookFeed struct {
 	Game         amqp.Game `gorm:"primaryKey"`
 	Locale       amqp.Language
 	RetryNumber  int64 `gorm:"default:0"`
-	UpdatedAt    time.Time
+	PublishedAt  *time.Time
+	FailedAt     *time.Time
 }
 
 type WebhookTwitch struct {
-	WebhookID    string
+	WebhookID    string `gorm:"unique;not null"`
 	WebhookToken string
 	GuildID      string   `gorm:"primaryKey"`
 	ChannelID    string   `gorm:"primaryKey"`
@@ -39,11 +41,12 @@ type WebhookTwitch struct {
 	Streamer     Streamer `gorm:"foreignKey:StreamerID"`
 	Locale       amqp.Language
 	RetryNumber  int64 `gorm:"default:0"`
-	UpdatedAt    time.Time
+	PublishedAt  *time.Time
+	FailedAt     *time.Time
 }
 
 type WebhookTwitter struct {
-	WebhookID      string
+	WebhookID      string `gorm:"unique;not null"`
 	WebhookToken   string
 	GuildID        string         `gorm:"primaryKey"`
 	ChannelID      string         `gorm:"primaryKey"`
@@ -51,11 +54,12 @@ type WebhookTwitter struct {
 	TwitterAccount TwitterAccount `gorm:"foreignKey:TwitterID"`
 	Locale         amqp.Language
 	RetryNumber    int64 `gorm:"default:0"`
-	UpdatedAt      time.Time
+	PublishedAt    *time.Time
+	FailedAt       *time.Time
 }
 
 type WebhookYoutube struct {
-	WebhookID    string
+	WebhookID    string `gorm:"unique;not null"`
 	WebhookToken string
 	GuildID      string  `gorm:"primaryKey"`
 	ChannelID    string  `gorm:"primaryKey"`
@@ -63,5 +67,6 @@ type WebhookYoutube struct {
 	Videast      Videast `gorm:"foreignKey:VideastID"`
 	Locale       amqp.Language
 	RetryNumber  int64 `gorm:"default:0"`
-	UpdatedAt    time.Time
+	PublishedAt  *time.Time
+	FailedAt     *time.Time
 }
