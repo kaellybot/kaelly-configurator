@@ -41,7 +41,6 @@ func (service *Impl) almanaxRequest(ctx amqp.Context, message *amqp.RabbitMQMess
 			ChannelID:    request.ChannelId,
 			Locale:       message.Language,
 			Game:         message.Game,
-			RetryNumber:  0,
 		})
 		if errSave != nil {
 			log.Error().Err(errSave).Str(constants.LogCorrelationID, ctx.CorrelationID).

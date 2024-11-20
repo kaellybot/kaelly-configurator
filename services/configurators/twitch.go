@@ -39,7 +39,6 @@ func (service *Impl) twitchRequest(ctx amqp.Context, message *amqp.RabbitMQMessa
 			ChannelID:    request.ChannelId,
 			StreamerID:   request.StreamerId,
 			Locale:       message.Language,
-			RetryNumber:  0,
 		})
 		if errSave != nil {
 			log.Error().Err(errSave).Str(constants.LogCorrelationID, ctx.CorrelationID).

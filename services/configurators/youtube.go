@@ -39,7 +39,6 @@ func (service *Impl) youtubeRequest(ctx amqp.Context, message *amqp.RabbitMQMess
 			ChannelID:    request.ChannelId,
 			VideastID:    request.VideastId,
 			Locale:       message.Language,
-			RetryNumber:  0,
 		})
 		if errSave != nil {
 			log.Error().Err(errSave).Str(constants.LogCorrelationID, ctx.CorrelationID).

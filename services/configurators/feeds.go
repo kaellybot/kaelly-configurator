@@ -42,7 +42,6 @@ func (service *Impl) rssRequest(ctx amqp.Context, message *amqp.RabbitMQMessage)
 			FeedTypeID:   request.FeedId,
 			Locale:       message.Language,
 			Game:         message.Game,
-			RetryNumber:  0,
 		})
 		if errSave != nil {
 			log.Error().Err(errSave).Str(constants.LogCorrelationID, ctx.CorrelationID).

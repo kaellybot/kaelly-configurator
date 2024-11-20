@@ -1,8 +1,6 @@
 package entities
 
 import (
-	"time"
-
 	amqp "github.com/kaellybot/kaelly-amqp"
 )
 
@@ -13,9 +11,6 @@ type WebhookAlmanax struct {
 	ChannelID    string    `gorm:"primaryKey"`
 	Game         amqp.Game `gorm:"primaryKey"`
 	Locale       amqp.Language
-	RetryNumber  int64 `gorm:"default:0"`
-	PublishedAt  *time.Time
-	FailedAt     *time.Time
 }
 
 type WebhookFeed struct {
@@ -27,9 +22,6 @@ type WebhookFeed struct {
 	FeedType     FeedType  `gorm:"foreignKey:FeedTypeID"`
 	Game         amqp.Game `gorm:"primaryKey"`
 	Locale       amqp.Language
-	RetryNumber  int64 `gorm:"default:0"`
-	PublishedAt  *time.Time
-	FailedAt     *time.Time
 }
 
 type WebhookTwitch struct {
@@ -40,9 +32,6 @@ type WebhookTwitch struct {
 	StreamerID   string   `gorm:"primaryKey"`
 	Streamer     Streamer `gorm:"foreignKey:StreamerID"`
 	Locale       amqp.Language
-	RetryNumber  int64 `gorm:"default:0"`
-	PublishedAt  *time.Time
-	FailedAt     *time.Time
 }
 
 type WebhookTwitter struct {
@@ -53,9 +42,6 @@ type WebhookTwitter struct {
 	TwitterID      string         `gorm:"primaryKey"`
 	TwitterAccount TwitterAccount `gorm:"foreignKey:TwitterID"`
 	Locale         amqp.Language
-	RetryNumber    int64 `gorm:"default:0"`
-	PublishedAt    *time.Time
-	FailedAt       *time.Time
 }
 
 type WebhookYoutube struct {
@@ -66,7 +52,4 @@ type WebhookYoutube struct {
 	VideastID    string  `gorm:"primaryKey"`
 	Videast      Videast `gorm:"foreignKey:VideastID"`
 	Locale       amqp.Language
-	RetryNumber  int64 `gorm:"default:0"`
-	PublishedAt  *time.Time
-	FailedAt     *time.Time
 }
