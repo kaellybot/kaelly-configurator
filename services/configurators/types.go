@@ -7,8 +7,11 @@ import (
 )
 
 const (
-	requestQueueName   = "configurator-requests"
+	requestQueueName = "configurator-requests"
+	newsQueueName    = "configurator-news"
+
 	requestsRoutingkey = "requests.configs"
+	newsRoutingkey     = "news.guilds"
 )
 
 type Service interface {

@@ -26,26 +26,13 @@ func (repo *Impl) Get(guildID string, game amqp.Game) (entities.Guild, error) {
 		Find(&guild).Limit(1).Error
 }
 
-func (repo *Impl) Create(id string, game amqp.Game) (bool, error) {
-	var created bool
-	err := repo.db.GetDB().Transaction(func(tx *gorm.DB) error {
-		result := tx.FirstOrCreate(&entities.Guild{
+func (repo *Impl) Create(id string, game amqp.Game) error {
+	return repo.db.GetDB().Transaction(func(tx *gorm.DB) error {
+		return tx.FirstOrCreate(&entities.Guild{
 			ID:   id,
 			Game: game,
-		})
-		if result.Error != nil {
-			return result.Error
-		}
-
-		created = result.RowsAffected == 1
-		return nil
+		}).Error
 	})
-
-	if err != nil {
-		return false, err
-	}
-
-	return created, nil
 }
 
 func (repo *Impl) Update(guild entities.Guild) error {
@@ -54,24 +41,11 @@ func (repo *Impl) Update(guild entities.Guild) error {
 	})
 }
 
-func (repo *Impl) Delete(id string, game amqp.Game) (bool, error) {
-	var deleted bool
-	err := repo.db.GetDB().Transaction(func(tx *gorm.DB) error {
-		result := tx.Delete(&entities.Guild{
+func (repo *Impl) Delete(id string, game amqp.Game) error {
+	return repo.db.GetDB().Transaction(func(tx *gorm.DB) error {
+		return tx.Delete(&entities.Guild{
 			ID:   id,
 			Game: game,
-		})
-		if result.Error != nil {
-			return result.Error
-		}
-
-		deleted = result.RowsAffected == 1
-		return nil
+		}).Error
 	})
-
-	if err != nil {
-		return false, err
-	}
-
-	return deleted, nil
 }

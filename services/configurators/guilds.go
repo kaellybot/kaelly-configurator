@@ -2,53 +2,40 @@ package configurators
 
 import (
 	amqp "github.com/kaellybot/kaelly-amqp"
-	"github.com/kaellybot/kaelly-configurator/models/mappers"
-	"github.com/kaellybot/kaelly-configurator/utils/replies"
+	"github.com/kaellybot/kaelly-configurator/models/constants"
 	"github.com/rs/zerolog/log"
 )
 
-func (service *Impl) guildCreateRequest(ctx amqp.Context, message *amqp.RabbitMQMessage) {
-	request := message.ConfigurationGuildCreateRequest
-	if !isValidConfigurationGuildCreateRequest(request) {
-		replies.FailedAnswer(ctx, service.broker, amqp.RabbitMQMessage_CONFIGURATION_GUILD_CREATE_ANSWER,
-			message.Language)
+func (service *Impl) guildNews(message *amqp.RabbitMQMessage) {
+	newsGuild := message.NewsGuildMessage
+
+	switch newsGuild.Event {
+	case amqp.NewsGuildMessage_CREATE:
+		service.guildCreateRequest(newsGuild.Id, message.Game)
+	case amqp.NewsGuildMessage_DELETE:
+		service.guildDeleteRequest(newsGuild.Id, message.Game)
+	case amqp.NewsGuildMessage_UNKNOWN:
+		fallthrough
+	default:
+		log.Warn().
+			Str(constants.LogEvent, newsGuild.Event.String()).
+			Msg("Guild event not handled, ignoring it")
 		return
 	}
+}
 
-	created, errCreate := service.guildService.Create(request.Id, message.Game)
+func (service *Impl) guildCreateRequest(guildID string, game amqp.Game) {
+	errCreate := service.guildService.Create(guildID, game)
 	if errCreate != nil {
-		log.Warn().Err(errCreate).Msg("Cannot create guild into DB, continuing...")
-		replies.FailedAnswer(ctx, service.broker, amqp.RabbitMQMessage_CONFIGURATION_GUILD_CREATE_ANSWER,
-			message.Language)
-	} else {
-		answer := mappers.MapGuildCreateAnswer(request, message.Game, created)
-		replies.SucceededAnswer(ctx, service.broker, answer)
+		log.Warn().Err(errCreate).
+			Msg("Cannot create guild into DB, continuing...")
 	}
 }
 
-func (service *Impl) guildDeleteRequest(ctx amqp.Context, message *amqp.RabbitMQMessage) {
-	request := message.ConfigurationGuildDeleteRequest
-	if !isValidConfigurationGuildDeleteRequest(request) {
-		replies.FailedAnswer(ctx, service.broker, amqp.RabbitMQMessage_CONFIGURATION_GUILD_DELETE_ANSWER,
-			message.Language)
-		return
-	}
-
-	deleted, errDel := service.guildService.Delete(request.Id, message.Game)
+func (service *Impl) guildDeleteRequest(guildID string, game amqp.Game) {
+	errDel := service.guildService.Delete(guildID, game)
 	if errDel != nil {
-		log.Warn().Err(errDel).Msg("Cannot delete guild from DB, continuing...")
-		replies.FailedAnswer(ctx, service.broker, amqp.RabbitMQMessage_CONFIGURATION_GUILD_DELETE_ANSWER,
-			message.Language)
-	} else {
-		answer := mappers.MapGuildDeleteAnswer(request, message.Game, deleted)
-		replies.SucceededAnswer(ctx, service.broker, answer)
+		log.Warn().Err(errDel).
+			Msg("Cannot delete guild from DB, continuing...")
 	}
-}
-
-func isValidConfigurationGuildCreateRequest(request *amqp.ConfigurationGuildCreateRequest) bool {
-	return request != nil
-}
-
-func isValidConfigurationGuildDeleteRequest(request *amqp.ConfigurationGuildDeleteRequest) bool {
-	return request != nil
 }

@@ -16,28 +16,32 @@ func New(broker amqp.MessageBroker, guildService guilds.Service, channelService 
 	}, nil
 }
 
-func GetBinding() amqp.Binding {
-	return amqp.Binding{
-		Exchange:   amqp.ExchangeRequest,
-		RoutingKey: requestsRoutingkey,
-		Queue:      requestQueueName,
+func GetBindings() []amqp.Binding {
+	return []amqp.Binding{
+		{
+			Exchange:   amqp.ExchangeRequest,
+			RoutingKey: requestsRoutingkey,
+			Queue:      requestQueueName,
+		},
+		{
+			Exchange:   amqp.ExchangeNews,
+			RoutingKey: newsRoutingkey,
+			Queue:      newsQueueName,
+		},
 	}
 }
 
 func (service *Impl) Consume() {
-	log.Info().Msgf("Consuming configurator requests...")
-	service.broker.Consume(requestQueueName, service.consume)
+	log.Info().Msgf("Consuming configurator news and requests...")
+	service.broker.Consume(requestQueueName, service.consumeRequests)
+	service.broker.Consume(newsQueueName, service.consumeNews)
 }
 
-func (service *Impl) consume(ctx amqp.Context, message *amqp.RabbitMQMessage) {
+func (service *Impl) consumeRequests(ctx amqp.Context, message *amqp.RabbitMQMessage) {
 	//exhaustive:ignore Don't need to be exhaustive here since they will be handled by default case
 	switch message.Type {
 	case amqp.RabbitMQMessage_CONFIGURATION_GET_REQUEST:
 		service.getRequest(ctx, message)
-	case amqp.RabbitMQMessage_CONFIGURATION_GUILD_CREATE_REQUEST:
-		service.guildCreateRequest(ctx, message)
-	case amqp.RabbitMQMessage_CONFIGURATION_GUILD_DELETE_REQUEST:
-		service.guildDeleteRequest(ctx, message)
 	case amqp.RabbitMQMessage_CONFIGURATION_SET_SERVER_REQUEST:
 		service.serverRequest(ctx, message)
 	case amqp.RabbitMQMessage_CONFIGURATION_SET_ALMANAX_WEBHOOK_REQUEST:
@@ -54,5 +58,17 @@ func (service *Impl) consume(ctx amqp.Context, message *amqp.RabbitMQMessage) {
 		log.Warn().
 			Str(constants.LogCorrelationID, ctx.CorrelationID).
 			Msgf("Type not recognized, request ignored")
+	}
+}
+
+func (service *Impl) consumeNews(ctx amqp.Context, message *amqp.RabbitMQMessage) {
+	//exhaustive:ignore Don't need to be exhaustive here since they will be handled by default case
+	switch message.Type {
+	case amqp.RabbitMQMessage_NEWS_GUILD:
+		service.guildNews(message)
+	default:
+		log.Warn().
+			Str(constants.LogCorrelationID, ctx.CorrelationID).
+			Msgf("Type not recognized, news ignored")
 	}
 }

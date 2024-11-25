@@ -3,17 +3,18 @@ package constants
 import "github.com/rs/zerolog"
 
 const (
+	LogCorrelationID = "correlationID"
+	LogChannelID     = "channelID"
+	LogEvent         = "event"
+	LogFeedTypeID    = "feedTypeID"
 	LogFileName      = "fileName"
 	LogGame          = "game"
-	LogCorrelationID = "correlationID"
+	LogGuildID       = "guildID"
 	LogReplyTo       = "replyTo"
 	LogServerID      = "serverID"
-	LogGuildID       = "guildID"
-	LogChannelID     = "channelID"
-	LogFeedTypeID    = "feedTypeID"
+	LogStreamerID    = "streamerID"
 	LogTwitterID     = "twitterID"
 	LogVideastID     = "videastID"
-	LogStreamerID    = "streamerID"
 
 	LogLevelFallback = zerolog.InfoLevel
 )

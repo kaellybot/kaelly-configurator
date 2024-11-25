@@ -22,7 +22,7 @@ import (
 func New() (*Impl, error) {
 	// misc
 	broker := amqp.New(constants.RabbitMQClientID, viper.GetString(constants.RabbitMQAddress),
-		amqp.WithBindings(configurators.GetBinding()))
+		amqp.WithBindings(configurators.GetBindings()...))
 	db := databases.New()
 	probes := insights.NewProbes(broker.IsConnected, db.IsConnected)
 	prom := insights.NewPrometheusMetrics()
