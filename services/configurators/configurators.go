@@ -34,6 +34,10 @@ func (service *Impl) consume(ctx amqp.Context, message *amqp.RabbitMQMessage) {
 	switch message.Type {
 	case amqp.RabbitMQMessage_CONFIGURATION_GET_REQUEST:
 		service.getRequest(ctx, message)
+	case amqp.RabbitMQMessage_CONFIGURATION_GUILD_CREATE_REQUEST:
+		service.guildCreateRequest(ctx, message)
+	case amqp.RabbitMQMessage_CONFIGURATION_GUILD_DELETE_REQUEST:
+		service.guildDeleteRequest(ctx, message)
 	case amqp.RabbitMQMessage_CONFIGURATION_SET_SERVER_REQUEST:
 		service.serverRequest(ctx, message)
 	case amqp.RabbitMQMessage_CONFIGURATION_SET_ALMANAX_WEBHOOK_REQUEST:

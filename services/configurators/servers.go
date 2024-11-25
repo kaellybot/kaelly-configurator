@@ -44,7 +44,7 @@ func (service *Impl) serverRequest(ctx amqp.Context, message *amqp.RabbitMQMessa
 }
 
 func (service *Impl) updateGuildServer(guildID, serverID string, game amqp.Game) error {
-	return service.guildService.Save(entities.Guild{
+	return service.guildService.Update(entities.Guild{
 		ID:       guildID,
 		ServerID: &serverID,
 		Game:     game,

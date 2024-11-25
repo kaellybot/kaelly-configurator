@@ -5,6 +5,38 @@ import (
 	"github.com/kaellybot/kaelly-configurator/models/entities"
 )
 
+func MapGuildCreateAnswer(request *amqp.ConfigurationGuildCreateRequest,
+	game amqp.Game, created bool) *amqp.RabbitMQMessage {
+	return &amqp.RabbitMQMessage{
+		Status:   amqp.RabbitMQMessage_SUCCESS,
+		Type:     amqp.RabbitMQMessage_CONFIGURATION_GUILD_CREATE_ANSWER,
+		Language: amqp.Language_ANY,
+		Game:     game,
+		ConfigurationGuildCreateAnswer: &amqp.ConfigurationGuildCreateAnswer{
+			Id:          request.Id,
+			Name:        request.Name,
+			MemberCount: request.MemberCount,
+			Created:     created,
+		},
+	}
+}
+
+func MapGuildDeleteAnswer(request *amqp.ConfigurationGuildDeleteRequest,
+	game amqp.Game, deleted bool) *amqp.RabbitMQMessage {
+	return &amqp.RabbitMQMessage{
+		Status:   amqp.RabbitMQMessage_SUCCESS,
+		Type:     amqp.RabbitMQMessage_CONFIGURATION_GUILD_DELETE_ANSWER,
+		Language: amqp.Language_ANY,
+		Game:     game,
+		ConfigurationGuildDeleteAnswer: &amqp.ConfigurationGuildDeleteAnswer{
+			Id:          request.Id,
+			Name:        request.Name,
+			MemberCount: request.MemberCount,
+			Deleted:     deleted,
+		},
+	}
+}
+
 func MapGuild(guild entities.Guild, langage amqp.Language) *amqp.RabbitMQMessage {
 	serverID := ""
 	if guild.ServerID != nil {

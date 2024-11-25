@@ -8,7 +8,9 @@ import (
 
 type Repository interface {
 	Get(guildID string, game amqp.Game) (entities.Guild, error)
-	Save(guild entities.Guild) error
+	Create(guildID string, game amqp.Game) (bool, error)
+	Update(guild entities.Guild) error
+	Delete(guildID string, game amqp.Game) (bool, error)
 }
 
 type Impl struct {
