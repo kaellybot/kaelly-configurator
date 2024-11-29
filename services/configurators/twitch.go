@@ -18,6 +18,7 @@ func (service *Impl) twitchRequest(ctx amqp.Context, message *amqp.RabbitMQMessa
 	log.Info().Str(constants.LogCorrelationID, ctx.CorrelationID).
 		Str(constants.LogGuildID, request.GuildId).
 		Str(constants.LogChannelID, request.ChannelId).
+		Str(constants.LogStreamerID, request.StreamerId).
 		Msgf("Set twitch webhook configuration request received")
 
 	oldWebhook, errGet := service.channelService.GetTwitchWebhook(request.GuildId, request.ChannelId, request.StreamerId)
@@ -38,6 +39,7 @@ func (service *Impl) twitchRequest(ctx amqp.Context, message *amqp.RabbitMQMessa
 			GuildID:      request.GuildId,
 			ChannelID:    request.ChannelId,
 			StreamerID:   request.StreamerId,
+			Game:         message.Game,
 			Locale:       message.Language,
 		})
 		if errSave != nil {

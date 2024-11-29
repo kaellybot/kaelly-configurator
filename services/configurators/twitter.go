@@ -39,6 +39,7 @@ func (service *Impl) twitterRequest(ctx amqp.Context, message *amqp.RabbitMQMess
 			GuildID:      request.GuildId,
 			ChannelID:    request.ChannelId,
 			TwitterID:    request.TwitterId,
+			Game:         message.Game,
 			Locale:       message.Language,
 		})
 		if errSave != nil {

@@ -18,6 +18,7 @@ func (service *Impl) youtubeRequest(ctx amqp.Context, message *amqp.RabbitMQMess
 	log.Info().Str(constants.LogCorrelationID, ctx.CorrelationID).
 		Str(constants.LogGuildID, request.GuildId).
 		Str(constants.LogChannelID, request.ChannelId).
+		Str(constants.LogVideastID, request.VideastId).
 		Msgf("Set youtube webhook configuration request received")
 
 	oldWebhook, errGet := service.channelService.GetYoutubeWebhook(request.GuildId, request.ChannelId, request.VideastId)
@@ -38,6 +39,7 @@ func (service *Impl) youtubeRequest(ctx amqp.Context, message *amqp.RabbitMQMess
 			GuildID:      request.GuildId,
 			ChannelID:    request.ChannelId,
 			VideastID:    request.VideastId,
+			Game:         message.Game,
 			Locale:       message.Language,
 		})
 		if errSave != nil {

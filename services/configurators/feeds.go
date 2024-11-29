@@ -40,8 +40,8 @@ func (service *Impl) rssRequest(ctx amqp.Context, message *amqp.RabbitMQMessage)
 			GuildID:      request.GuildId,
 			ChannelID:    request.ChannelId,
 			FeedTypeID:   request.FeedId,
-			Locale:       message.Language,
 			Game:         message.Game,
+			Locale:       message.Language,
 		})
 		if errSave != nil {
 			log.Error().Err(errSave).Str(constants.LogCorrelationID, ctx.CorrelationID).

@@ -39,8 +39,8 @@ func (service *Impl) almanaxRequest(ctx amqp.Context, message *amqp.RabbitMQMess
 			WebhookToken: request.WebhookToken,
 			GuildID:      request.GuildId,
 			ChannelID:    request.ChannelId,
-			Locale:       message.Language,
 			Game:         message.Game,
+			Locale:       message.Language,
 		})
 		if errSave != nil {
 			log.Error().Err(errSave).Str(constants.LogCorrelationID, ctx.CorrelationID).
