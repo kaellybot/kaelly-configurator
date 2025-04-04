@@ -9,12 +9,7 @@ import (
 )
 
 func (service *Impl) almanaxRequest(ctx amqp.Context, message *amqp.RabbitMQMessage) {
-	request := message.ConfigurationSetAlmanaxWebhookRequest
-	if !isValidAlmanaxRequest(request) {
-		service.publishFailedSetAnswer(ctx, message.Language)
-		return
-	}
-
+	request := message.ConfigurationSetNotificationRequest
 	log.Info().Str(constants.LogCorrelationID, ctx.CorrelationID).
 		Str(constants.LogGuildID, request.GuildId).
 		Str(constants.LogChannelID, request.ChannelId).
@@ -29,18 +24,17 @@ func (service *Impl) almanaxRequest(ctx amqp.Context, message *amqp.RabbitMQMess
 			Str(constants.LogChannelID, request.ChannelId).
 			Str(constants.LogGame, message.Game.String()).
 			Msgf("Almanax webhook retrieval has failed, answering with failed response")
-		service.publishFailedSetWebhookAnswer(ctx, request.WebhookId, message.Language)
+		service.publishFailedSetNotificationAnswer(ctx, request.WebhookId, message.Language)
 		return
 	}
 
 	if request.Enabled {
 		errSave := service.channelService.SaveAlmanaxWebhook(entities.WebhookAlmanax{
-			WebhookID:    request.WebhookId,
-			WebhookToken: request.WebhookToken,
-			GuildID:      request.GuildId,
-			ChannelID:    request.ChannelId,
-			Game:         message.Game,
-			Locale:       message.Language,
+			WebhookID: request.WebhookId,
+			GuildID:   request.GuildId,
+			ChannelID: request.ChannelId,
+			Game:      message.Game,
+			Locale:    message.Language,
 		})
 		if errSave != nil {
 			log.Error().Err(errSave).Str(constants.LogCorrelationID, ctx.CorrelationID).
@@ -48,7 +42,7 @@ func (service *Impl) almanaxRequest(ctx amqp.Context, message *amqp.RabbitMQMess
 				Str(constants.LogChannelID, request.ChannelId).
 				Str(constants.LogGame, message.Game.String()).
 				Msgf("Almanax webhook save has failed, answering with failed response")
-			service.publishFailedSetWebhookAnswer(ctx, request.WebhookId, message.Language)
+			service.publishFailedSetNotificationAnswer(ctx, request.WebhookId, message.Language)
 			return
 		}
 	} else {
@@ -59,18 +53,14 @@ func (service *Impl) almanaxRequest(ctx amqp.Context, message *amqp.RabbitMQMess
 				Str(constants.LogChannelID, request.ChannelId).
 				Str(constants.LogGame, message.Game.String()).
 				Msgf("Almanax webhook removal has failed, answering with failed response")
-			service.publishFailedSetAnswer(ctx, message.Language)
+			service.publishFailedSetNotificationAnswer(ctx, "", message.Language)
 			return
 		}
 	}
 
 	if oldWebhook != nil {
-		service.publishSucceededSetWebhookAnswer(ctx, oldWebhook.WebhookID, message.Language)
+		service.publishSucceededSetNotificationAnswer(ctx, oldWebhook.WebhookID, message.Language)
 	} else {
-		service.publishSucceededSetAnswer(ctx, message.Language)
+		service.publishSucceededSetNotificationAnswer(ctx, "", message.Language)
 	}
-}
-
-func isValidAlmanaxRequest(request *amqp.ConfigurationSetAlmanaxWebhookRequest) bool {
-	return request != nil
 }

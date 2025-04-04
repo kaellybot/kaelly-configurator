@@ -7,14 +7,14 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (service *Impl) publishSucceededSetWebhookAnswer(ctx amqp.Context, webhookID string,
+func (service *Impl) publishSucceededSetNotificationAnswer(ctx amqp.Context, webhookID string,
 	lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
-		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_ANSWER,
+		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_NOTIFICATION_ANSWER,
 		Status:   amqp.RabbitMQMessage_SUCCESS,
 		Language: lg,
-		ConfigurationSetAnswer: &amqp.ConfigurationSetAnswer{
-			RemoveWebhook: true,
+		ConfigurationSetNotificationAnswer: &amqp.ConfigurationSetNotificationAnswer{
+			RemoveWebhook: webhookID != "",
 			WebhookId:     webhookID,
 		},
 	}
@@ -22,27 +22,14 @@ func (service *Impl) publishSucceededSetWebhookAnswer(ctx amqp.Context, webhookI
 	replies.SucceededAnswer(ctx, service.broker, &message)
 }
 
-func (service *Impl) publishSucceededSetAnswer(ctx amqp.Context, lg amqp.Language) {
-	message := amqp.RabbitMQMessage{
-		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_ANSWER,
-		Status:   amqp.RabbitMQMessage_SUCCESS,
-		Language: lg,
-		ConfigurationSetAnswer: &amqp.ConfigurationSetAnswer{
-			RemoveWebhook: false,
-		},
-	}
-
-	replies.SucceededAnswer(ctx, service.broker, &message)
-}
-
-func (service *Impl) publishFailedSetWebhookAnswer(ctx amqp.Context, webhookID string,
+func (service *Impl) publishFailedSetNotificationAnswer(ctx amqp.Context, webhookID string,
 	lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
-		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_ANSWER,
+		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_NOTIFICATION_ANSWER,
 		Status:   amqp.RabbitMQMessage_FAILED,
 		Language: lg,
-		ConfigurationSetAnswer: &amqp.ConfigurationSetAnswer{
-			RemoveWebhook: true,
+		ConfigurationSetNotificationAnswer: &amqp.ConfigurationSetNotificationAnswer{
+			RemoveWebhook: webhookID != "",
 			WebhookId:     webhookID,
 		},
 	}
@@ -55,14 +42,21 @@ func (service *Impl) publishFailedSetWebhookAnswer(ctx amqp.Context, webhookID s
 	}
 }
 
-func (service *Impl) publishFailedSetAnswer(ctx amqp.Context, lg amqp.Language) {
+func (service *Impl) publishSucceededSetServerAnswer(ctx amqp.Context, lg amqp.Language) {
 	message := amqp.RabbitMQMessage{
-		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_ANSWER,
+		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_SERVER_ANSWER,
+		Status:   amqp.RabbitMQMessage_SUCCESS,
+		Language: lg,
+	}
+
+	replies.SucceededAnswer(ctx, service.broker, &message)
+}
+
+func (service *Impl) publishFailedSetServerAnswer(ctx amqp.Context, lg amqp.Language) {
+	message := amqp.RabbitMQMessage{
+		Type:     amqp.RabbitMQMessage_CONFIGURATION_SET_SERVER_ANSWER,
 		Status:   amqp.RabbitMQMessage_FAILED,
 		Language: lg,
-		ConfigurationSetAnswer: &amqp.ConfigurationSetAnswer{
-			RemoveWebhook: false,
-		},
 	}
 
 	err := service.broker.Reply(&message, ctx.CorrelationID, ctx.ReplyTo)

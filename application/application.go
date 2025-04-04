@@ -7,9 +7,7 @@ import (
 	"github.com/kaellybot/kaelly-configurator/repositories/feeds"
 	guildRepo "github.com/kaellybot/kaelly-configurator/repositories/guilds"
 	"github.com/kaellybot/kaelly-configurator/repositories/servers"
-	"github.com/kaellybot/kaelly-configurator/repositories/twitch"
 	"github.com/kaellybot/kaelly-configurator/repositories/twitter"
-	"github.com/kaellybot/kaelly-configurator/repositories/youtube"
 	"github.com/kaellybot/kaelly-configurator/services/channels"
 	"github.com/kaellybot/kaelly-configurator/services/configurators"
 	"github.com/kaellybot/kaelly-configurator/services/guilds"
@@ -32,9 +30,7 @@ func New() (*Impl, error) {
 	chanServerRepo := servers.New(db)
 	almanaxRepo := almanax.New(db)
 	feedsRepo := feeds.New(db)
-	twitchRepo := twitch.New(db)
 	twitterRepo := twitter.New(db)
-	youtubeRepo := youtube.New(db)
 
 	// services
 	guildService, err := guilds.New(guildRepo)
@@ -42,7 +38,7 @@ func New() (*Impl, error) {
 		return nil, err
 	}
 
-	channelService, err := channels.New(chanServerRepo, almanaxRepo, feedsRepo, twitchRepo, twitterRepo, youtubeRepo)
+	channelService, err := channels.New(chanServerRepo, almanaxRepo, feedsRepo, twitterRepo)
 	if err != nil {
 		return nil, err
 	}

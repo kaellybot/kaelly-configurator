@@ -44,20 +44,35 @@ func (service *Impl) consumeRequests(ctx amqp.Context, message *amqp.RabbitMQMes
 		service.getRequest(ctx, message)
 	case amqp.RabbitMQMessage_CONFIGURATION_SET_SERVER_REQUEST:
 		service.serverRequest(ctx, message)
-	case amqp.RabbitMQMessage_CONFIGURATION_SET_ALMANAX_WEBHOOK_REQUEST:
-		service.almanaxRequest(ctx, message)
-	case amqp.RabbitMQMessage_CONFIGURATION_SET_RSS_WEBHOOK_REQUEST:
-		service.rssRequest(ctx, message)
-	case amqp.RabbitMQMessage_CONFIGURATION_SET_TWITCH_WEBHOOK_REQUEST:
-		service.twitchRequest(ctx, message)
-	case amqp.RabbitMQMessage_CONFIGURATION_SET_TWITTER_WEBHOOK_REQUEST:
-		service.twitterRequest(ctx, message)
-	case amqp.RabbitMQMessage_CONFIGURATION_SET_YOUTUBE_WEBHOOK_REQUEST:
-		service.youtubeRequest(ctx, message)
+	case amqp.RabbitMQMessage_CONFIGURATION_SET_NOTIFICATION_REQUEST:
+		service.notificationRequest(ctx, message)
 	default:
 		log.Warn().
 			Str(constants.LogCorrelationID, ctx.CorrelationID).
 			Msgf("Type not recognized, request ignored")
+	}
+}
+
+func (service *Impl) notificationRequest(ctx amqp.Context, message *amqp.RabbitMQMessage) {
+	request := message.ConfigurationSetNotificationRequest
+	if !isValidNotificationRequest(request) {
+		service.publishFailedSetNotificationAnswer(ctx, "", message.Language)
+		return
+	}
+
+	switch request.NotificationType {
+	case amqp.NotificationType_ALMANAX:
+		service.almanaxRequest(ctx, message)
+	case amqp.NotificationType_RSS:
+		service.rssRequest(ctx, message)
+	case amqp.NotificationType_TWITTER:
+		service.twitterRequest(ctx, message)
+	case amqp.NotificationType_UNKNOWN:
+		fallthrough
+	default:
+		log.Warn().
+			Str(constants.LogCorrelationID, ctx.CorrelationID).
+			Msgf("Notification type not recognized, request ignored")
 	}
 }
 
@@ -71,4 +86,8 @@ func (service *Impl) consumeNews(ctx amqp.Context, message *amqp.RabbitMQMessage
 			Str(constants.LogCorrelationID, ctx.CorrelationID).
 			Msgf("Type not recognized, news ignored")
 	}
+}
+
+func isValidNotificationRequest(request *amqp.ConfigurationSetNotificationRequest) bool {
+	return request != nil
 }

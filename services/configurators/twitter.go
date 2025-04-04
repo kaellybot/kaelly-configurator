@@ -9,46 +9,40 @@ import (
 )
 
 func (service *Impl) twitterRequest(ctx amqp.Context, message *amqp.RabbitMQMessage) {
-	request := message.ConfigurationSetTwitterWebhookRequest
-	if !isValidTwitterRequest(request) {
-		service.publishFailedSetAnswer(ctx, message.Language)
-		return
-	}
-
+	request := message.ConfigurationSetNotificationRequest
 	log.Info().Str(constants.LogCorrelationID, ctx.CorrelationID).
 		Str(constants.LogGuildID, request.GuildId).
 		Str(constants.LogChannelID, request.ChannelId).
-		Str(constants.LogTwitterID, request.TwitterId).
+		Str(constants.LogTwitterID, request.Label).
 		Msgf("Set twitter webhook configuration request received")
 
-	oldWebhook, errGet := service.channelService.GetTwitterWebhook(request.GuildId, request.ChannelId, request.TwitterId)
+	oldWebhook, errGet := service.channelService.GetTwitterWebhook(request.GuildId, request.ChannelId, request.Label)
 	if errGet != nil {
 		log.Error().Err(errGet).Str(constants.LogCorrelationID, ctx.CorrelationID).
 			Str(constants.LogGuildID, request.GuildId).
 			Str(constants.LogChannelID, request.ChannelId).
-			Str(constants.LogTwitterID, request.TwitterId).
+			Str(constants.LogTwitterID, request.Label).
 			Msgf("Twitter webhook retrieval has failed, answering with failed response")
-		service.publishFailedSetWebhookAnswer(ctx, request.WebhookId, message.Language)
+		service.publishFailedSetNotificationAnswer(ctx, request.WebhookId, message.Language)
 		return
 	}
 
 	if request.Enabled {
 		errSave := service.channelService.SaveTwitterWebhook(entities.WebhookTwitter{
-			WebhookID:    request.WebhookId,
-			WebhookToken: request.WebhookToken,
-			GuildID:      request.GuildId,
-			ChannelID:    request.ChannelId,
-			TwitterID:    request.TwitterId,
-			Game:         message.Game,
-			Locale:       message.Language,
+			WebhookID: request.WebhookId,
+			GuildID:   request.GuildId,
+			ChannelID: request.ChannelId,
+			TwitterID: request.Label,
+			Game:      message.Game,
+			Locale:    message.Language,
 		})
 		if errSave != nil {
 			log.Error().Err(errSave).Str(constants.LogCorrelationID, ctx.CorrelationID).
 				Str(constants.LogGuildID, request.GuildId).
 				Str(constants.LogChannelID, request.ChannelId).
-				Str(constants.LogTwitterID, request.TwitterId).
+				Str(constants.LogTwitterID, request.Label).
 				Msgf("Twitter webhook save has failed, answering with failed response")
-			service.publishFailedSetWebhookAnswer(ctx, request.WebhookId, message.Language)
+			service.publishFailedSetNotificationAnswer(ctx, request.WebhookId, message.Language)
 			return
 		}
 	} else {
@@ -57,20 +51,16 @@ func (service *Impl) twitterRequest(ctx amqp.Context, message *amqp.RabbitMQMess
 			log.Error().Err(errDel).Str(constants.LogCorrelationID, ctx.CorrelationID).
 				Str(constants.LogGuildID, request.GuildId).
 				Str(constants.LogChannelID, request.ChannelId).
-				Str(constants.LogTwitterID, request.TwitterId).
+				Str(constants.LogTwitterID, request.Label).
 				Msgf("Twitter webhook removal has failed, answering with failed response")
-			service.publishFailedSetAnswer(ctx, message.Language)
+			service.publishFailedSetNotificationAnswer(ctx, "", message.Language)
 			return
 		}
 	}
 
 	if oldWebhook != nil {
-		service.publishSucceededSetWebhookAnswer(ctx, oldWebhook.WebhookID, message.Language)
+		service.publishSucceededSetNotificationAnswer(ctx, oldWebhook.WebhookID, message.Language)
 	} else {
-		service.publishSucceededSetAnswer(ctx, message.Language)
+		service.publishSucceededSetNotificationAnswer(ctx, "", message.Language)
 	}
-}
-
-func isValidTwitterRequest(request *amqp.ConfigurationSetTwitterWebhookRequest) bool {
-	return request != nil
 }
