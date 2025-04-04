@@ -19,9 +19,7 @@ func (repo *Impl) Get(guildID string, game amqp.Game) (entities.Guild, error) {
 		Preload("ChannelServers").
 		Preload("AlmanaxWebhooks").
 		Preload("FeedWebhooks").
-		Preload("TwitchWebhooks").
 		Preload("TwitterWebhooks.TwitterAccount").
-		Preload("YoutubeWebhooks").
 		Where(entities.Guild{ID: guildID, Game: game}).
 		Find(&guild).Limit(1).Error
 }

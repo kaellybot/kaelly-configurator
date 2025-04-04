@@ -11,28 +11,29 @@ func MapGuild(guild entities.Guild, langage amqp.Language) *amqp.RabbitMQMessage
 		serverID = *guild.ServerID
 	}
 
+	notifiedChannels := make([]*amqp.ConfigurationGetAnswer_NotifiedChannel, 0)
+	notifiedChannels = append(notifiedChannels, mapAlmanaxWebhooks(guild.AlmanaxWebhooks)...)
+	notifiedChannels = append(notifiedChannels, mapFeedWebhooks(guild.FeedWebhooks)...)
+	notifiedChannels = append(notifiedChannels, mapTwitterWebhooks(guild.TwitterWebhooks)...)
+
 	return &amqp.RabbitMQMessage{
 		Type:     amqp.RabbitMQMessage_CONFIGURATION_GET_ANSWER,
 		Status:   amqp.RabbitMQMessage_SUCCESS,
 		Language: langage,
 		ConfigurationGetAnswer: &amqp.ConfigurationGetAnswer{
-			GuildId:         guild.ID,
-			ServerId:        serverID,
-			ChannelServers:  mapChannelServers(guild.ChannelServers),
-			AlmanaxWebhooks: mapAlmanaxWebhooks(guild.AlmanaxWebhooks),
-			RssWebhooks:     mapFeedWebhooks(guild.FeedWebhooks),
-			TwitchWebhooks:  mapTwitchWebhooks(guild.TwitchWebhooks),
-			TwitterWebhooks: mapTwitterWebhooks(guild.TwitterWebhooks),
-			YoutubeWebhooks: mapYoutubeWebhooks(guild.YoutubeWebhooks),
+			GuildId:          guild.ID,
+			ServerId:         serverID,
+			ServerChannels:   mapServerChannels(guild.ChannelServers),
+			NotifiedChannels: notifiedChannels,
 		},
 	}
 }
 
-func mapChannelServers(channelServers []entities.ChannelServer) []*amqp.ConfigurationGetAnswer_ChannelServer {
-	result := make([]*amqp.ConfigurationGetAnswer_ChannelServer, 0)
+func mapServerChannels(channelServers []entities.ChannelServer) []*amqp.ConfigurationGetAnswer_ServerChannel {
+	result := make([]*amqp.ConfigurationGetAnswer_ServerChannel, 0)
 
 	for _, channelServer := range channelServers {
-		result = append(result, &amqp.ConfigurationGetAnswer_ChannelServer{
+		result = append(result, &amqp.ConfigurationGetAnswer_ServerChannel{
 			ChannelId: channelServer.ChannelID,
 			ServerId:  channelServer.ServerID,
 		})
@@ -41,64 +42,41 @@ func mapChannelServers(channelServers []entities.ChannelServer) []*amqp.Configur
 	return result
 }
 
-func mapAlmanaxWebhooks(webhooks []entities.WebhookAlmanax) []*amqp.ConfigurationGetAnswer_AlmanaxWebhook {
-	result := make([]*amqp.ConfigurationGetAnswer_AlmanaxWebhook, 0)
+func mapAlmanaxWebhooks(webhooks []entities.WebhookAlmanax) []*amqp.ConfigurationGetAnswer_NotifiedChannel {
+	result := make([]*amqp.ConfigurationGetAnswer_NotifiedChannel, 0)
 	for _, webhook := range webhooks {
-		result = append(result, &amqp.ConfigurationGetAnswer_AlmanaxWebhook{
-			ChannelId: webhook.ChannelID,
-			WebhookId: webhook.WebhookID,
+		result = append(result, &amqp.ConfigurationGetAnswer_NotifiedChannel{
+			ChannelId:        webhook.ChannelID,
+			WebhookId:        webhook.WebhookID,
+			NotificationType: amqp.NotificationType_ALMANAX,
 		})
 	}
 
 	return result
 }
 
-func mapFeedWebhooks(webhooks []entities.WebhookFeed) []*amqp.ConfigurationGetAnswer_RssWebhook {
-	result := make([]*amqp.ConfigurationGetAnswer_RssWebhook, 0)
+func mapFeedWebhooks(webhooks []entities.WebhookFeed) []*amqp.ConfigurationGetAnswer_NotifiedChannel {
+	result := make([]*amqp.ConfigurationGetAnswer_NotifiedChannel, 0)
 	for _, webhook := range webhooks {
-		result = append(result, &amqp.ConfigurationGetAnswer_RssWebhook{
-			ChannelId: webhook.ChannelID,
-			WebhookId: webhook.WebhookID,
-			FeedId:    webhook.FeedTypeID,
+		result = append(result, &amqp.ConfigurationGetAnswer_NotifiedChannel{
+			ChannelId:        webhook.ChannelID,
+			WebhookId:        webhook.WebhookID,
+			Label:            webhook.FeedTypeID,
+			NotificationType: amqp.NotificationType_RSS,
 		})
 	}
 
 	return result
 }
 
-func mapTwitchWebhooks(webhooks []entities.WebhookTwitch) []*amqp.ConfigurationGetAnswer_TwitchWebhook {
-	result := make([]*amqp.ConfigurationGetAnswer_TwitchWebhook, 0)
+func mapTwitterWebhooks(webhooks []entities.WebhookTwitter) []*amqp.ConfigurationGetAnswer_NotifiedChannel {
+	result := make([]*amqp.ConfigurationGetAnswer_NotifiedChannel, 0)
 	for _, webhook := range webhooks {
-		result = append(result, &amqp.ConfigurationGetAnswer_TwitchWebhook{
-			ChannelId:  webhook.ChannelID,
-			WebhookId:  webhook.WebhookID,
-			StreamerId: webhook.StreamerID,
-		})
-	}
-
-	return result
-}
-
-func mapTwitterWebhooks(webhooks []entities.WebhookTwitter) []*amqp.ConfigurationGetAnswer_TwitterWebhook {
-	result := make([]*amqp.ConfigurationGetAnswer_TwitterWebhook, 0)
-	for _, webhook := range webhooks {
-		result = append(result, &amqp.ConfigurationGetAnswer_TwitterWebhook{
-			ChannelId: webhook.ChannelID,
-			WebhookId: webhook.WebhookID,
-			TwitterId: webhook.TwitterAccount.ID,
-		})
-	}
-
-	return result
-}
-
-func mapYoutubeWebhooks(webhooks []entities.WebhookYoutube) []*amqp.ConfigurationGetAnswer_YoutubeWebhook {
-	result := make([]*amqp.ConfigurationGetAnswer_YoutubeWebhook, 0)
-	for _, webhook := range webhooks {
-		result = append(result, &amqp.ConfigurationGetAnswer_YoutubeWebhook{
-			ChannelId: webhook.ChannelID,
-			WebhookId: webhook.WebhookID,
-			VideastId: webhook.VideastID,
+		result = append(result, &amqp.ConfigurationGetAnswer_NotifiedChannel{
+			ChannelId:        webhook.ChannelID,
+			WebhookId:        webhook.WebhookID,
+			Label:            webhook.TwitterAccount.ID,
+			NotificationType: amqp.NotificationType_TWITTER,
 		})
 	}
 
