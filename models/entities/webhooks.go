@@ -27,7 +27,7 @@ type WebhookTwitter struct {
 	GuildID        string         `gorm:"primaryKey"`
 	ChannelID      string         `gorm:"primaryKey"`
 	TwitterID      string         `gorm:"primaryKey"`
-	TwitterAccount TwitterAccount `gorm:"foreignKey:TwitterID"`
+	TwitterAccount TwitterAccount `gorm:"foreignKey:TwitterID,Game;references:ID,Game"`
 	Game           amqp.Game      `gorm:"primaryKey"`
 	Locale         amqp.Language
 }

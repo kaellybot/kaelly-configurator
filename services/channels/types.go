@@ -12,7 +12,7 @@ import (
 type Service interface {
 	GetAlmanaxWebhook(guildID, channelID string, game amqp.Game) (*entities.WebhookAlmanax, error)
 	GetFeedWebhook(guildID, channelID, feedTypeID string, game amqp.Game) (*entities.WebhookFeed, error)
-	GetTwitterWebhook(guildID, channelID, twitterID string) (*entities.WebhookTwitter, error)
+	GetTwitterWebhook(guildID, channelID, twitterID string, game amqp.Game) (*entities.WebhookTwitter, error)
 	SaveAlmanaxWebhook(webhook entities.WebhookAlmanax) error
 	SaveChannelServer(channelServer entities.ChannelServer) error
 	SaveFeedWebhook(webhook entities.WebhookFeed) error

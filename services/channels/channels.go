@@ -30,8 +30,8 @@ func (service *Impl) GetFeedWebhook(guildID, channelID, feedTypeID string,
 }
 
 func (service *Impl) GetTwitterWebhook(guildID, channelID, twitterID string,
-) (*entities.WebhookTwitter, error) {
-	return service.twitterWebhookRepo.Get(guildID, channelID, twitterID)
+	game amqp.Game) (*entities.WebhookTwitter, error) {
+	return service.twitterWebhookRepo.Get(guildID, channelID, twitterID, game)
 }
 
 func (service *Impl) SaveChannelServer(channelServer entities.ChannelServer) error {

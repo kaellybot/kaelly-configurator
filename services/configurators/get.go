@@ -11,8 +11,7 @@ import (
 func (service *Impl) getRequest(ctx amqp.Context, message *amqp.RabbitMQMessage) {
 	request := message.ConfigurationGetRequest
 	if !isValidConfigurationGetRequest(request) {
-		replies.FailedAnswer(ctx, service.broker, amqp.RabbitMQMessage_CONFIGURATION_GET_ANSWER,
-			message.Language)
+		replies.FailedAnswer(ctx, service.broker, message, amqp.RabbitMQMessage_CONFIGURATION_GET_ANSWER)
 		return
 	}
 
@@ -28,12 +27,11 @@ func (service *Impl) getRequest(ctx amqp.Context, message *amqp.RabbitMQMessage)
 			Str(constants.LogGuildID, request.GuildId).
 			Str(constants.LogGame, message.Game.String()).
 			Msgf("Returning failed answer")
-		replies.FailedAnswer(ctx, service.broker, amqp.RabbitMQMessage_CONFIGURATION_GET_ANSWER,
-			message.Language)
+		replies.FailedAnswer(ctx, service.broker, message, amqp.RabbitMQMessage_CONFIGURATION_GET_ANSWER)
 		return
 	}
 
-	response := mappers.MapGuild(guild, message.Language)
+	response := mappers.MapGuild(message, guild)
 	replies.SucceededAnswer(ctx, service.broker, response)
 }
 

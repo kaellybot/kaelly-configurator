@@ -10,7 +10,7 @@ import (
 func (service *Impl) serverRequest(ctx amqp.Context, message *amqp.RabbitMQMessage) {
 	request := message.ConfigurationSetServerRequest
 	if !isValidConfigurationServerRequest(request) {
-		service.publishFailedSetServerAnswer(ctx, message.Language)
+		service.publishFailedSetServerAnswer(ctx, message)
 		return
 	}
 
@@ -36,11 +36,11 @@ func (service *Impl) serverRequest(ctx amqp.Context, message *amqp.RabbitMQMessa
 			Str(constants.LogServerID, request.ServerId).
 			Str(constants.LogGame, message.Game.String()).
 			Msgf("Returning failed message")
-		service.publishFailedSetServerAnswer(ctx, message.Language)
+		service.publishFailedSetServerAnswer(ctx, message)
 		return
 	}
 
-	service.publishSucceededSetServerAnswer(ctx, message.Language)
+	service.publishSucceededSetServerAnswer(ctx, message)
 }
 
 func (service *Impl) updateGuildServer(guildID, serverID string, game amqp.Game) error {

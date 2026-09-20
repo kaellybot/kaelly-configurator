@@ -15,13 +15,16 @@ func (repo *Impl) Get(guildID string, game amqp.Game) (entities.Guild, error) {
 	guild := entities.Guild{
 		ID: guildID,
 	}
+	// Every preload filters on the game: without it, a guild configured for both
+	// games would return the other bot's channels and webhooks.
 	return guild, repo.db.GetDB().
-		Preload("ChannelServers").
-		Preload("AlmanaxWebhooks").
-		Preload("FeedWebhooks").
+		Preload("ChannelServers", "game = ?", game).
+		Preload("AlmanaxWebhooks", "game = ?", game).
+		Preload("FeedWebhooks", "game = ?", game).
+		Preload("TwitterWebhooks", "game = ?", game).
 		Preload("TwitterWebhooks.TwitterAccount").
 		Where(entities.Guild{ID: guildID, Game: game}).
-		Find(&guild).Limit(1).Error
+		Find(&guild).Error
 }
 
 func (repo *Impl) Create(id string, game amqp.Game) error {

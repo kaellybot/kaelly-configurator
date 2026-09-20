@@ -24,7 +24,7 @@ func (service *Impl) rssRequest(ctx amqp.Context, message *amqp.RabbitMQMessage)
 			Str(constants.LogFeedTypeID, request.Label).
 			Str(constants.LogGame, message.Game.String()).
 			Msgf("Feed webhook retrieval has failed, answering with failed response")
-		service.publishFailedSetNotificationAnswer(ctx, request.WebhookId, message.Language)
+		service.publishFailedSetNotificationAnswer(ctx, message, request.WebhookId)
 		return
 	}
 
@@ -44,7 +44,7 @@ func (service *Impl) rssRequest(ctx amqp.Context, message *amqp.RabbitMQMessage)
 				Str(constants.LogFeedTypeID, request.Label).
 				Str(constants.LogGame, message.Game.String()).
 				Msgf("Feed webhook save has failed, answering with failed response")
-			service.publishFailedSetNotificationAnswer(ctx, request.WebhookId, message.Language)
+			service.publishFailedSetNotificationAnswer(ctx, message, request.WebhookId)
 			return
 		}
 	} else {
@@ -56,14 +56,14 @@ func (service *Impl) rssRequest(ctx amqp.Context, message *amqp.RabbitMQMessage)
 				Str(constants.LogFeedTypeID, request.Label).
 				Str(constants.LogGame, message.Game.String()).
 				Msgf("Feed webhook removal has failed, answering with failed response")
-			service.publishFailedSetNotificationAnswer(ctx, "", message.Language)
+			service.publishFailedSetNotificationAnswer(ctx, message, "")
 			return
 		}
 	}
 
 	if oldWebhook != nil {
-		service.publishSucceededSetNotificationAnswer(ctx, oldWebhook.WebhookID, message.Language)
+		service.publishSucceededSetNotificationAnswer(ctx, message, oldWebhook.WebhookID)
 	} else {
-		service.publishSucceededSetNotificationAnswer(ctx, "", message.Language)
+		service.publishSucceededSetNotificationAnswer(ctx, message, "")
 	}
 }

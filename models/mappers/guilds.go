@@ -5,7 +5,7 @@ import (
 	"github.com/kaellybot/kaelly-configurator/models/entities"
 )
 
-func MapGuild(guild entities.Guild, langage amqp.Language) *amqp.RabbitMQMessage {
+func MapGuild(message *amqp.RabbitMQMessage, guild entities.Guild) *amqp.RabbitMQMessage {
 	serverID := ""
 	if guild.ServerID != nil {
 		serverID = *guild.ServerID
@@ -16,17 +16,15 @@ func MapGuild(guild entities.Guild, langage amqp.Language) *amqp.RabbitMQMessage
 	notifiedChannels = append(notifiedChannels, mapFeedWebhooks(guild.FeedWebhooks)...)
 	notifiedChannels = append(notifiedChannels, mapTwitterWebhooks(guild.TwitterWebhooks)...)
 
-	return &amqp.RabbitMQMessage{
-		Type:     amqp.RabbitMQMessage_CONFIGURATION_GET_ANSWER,
-		Status:   amqp.RabbitMQMessage_SUCCESS,
-		Language: langage,
-		ConfigurationGetAnswer: &amqp.ConfigurationGetAnswer{
-			GuildId:          guild.ID,
-			ServerId:         serverID,
-			ServerChannels:   mapServerChannels(guild.ChannelServers),
-			NotifiedChannels: notifiedChannels,
-		},
+	answer := amqp.NewReply(message, amqp.RabbitMQMessage_CONFIGURATION_GET_ANSWER,
+		amqp.RabbitMQMessage_SUCCESS)
+	answer.ConfigurationGetAnswer = &amqp.ConfigurationGetAnswer{
+		GuildId:          guild.ID,
+		ServerId:         serverID,
+		ServerChannels:   mapServerChannels(guild.ChannelServers),
+		NotifiedChannels: notifiedChannels,
 	}
+	return answer
 }
 
 func mapServerChannels(channelServers []entities.ChannelServer) []*amqp.ConfigurationGetAnswer_ServerChannel {

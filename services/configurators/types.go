@@ -14,6 +14,8 @@ const (
 	newsRoutingkey     = "news.guilds"
 )
 
+type requestHandler func(ctx amqp.Context, message *amqp.RabbitMQMessage)
+
 type Service interface {
 	Consume()
 }

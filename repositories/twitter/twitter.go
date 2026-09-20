@@ -1,6 +1,7 @@
 package twitter
 
 import (
+	amqp "github.com/kaellybot/kaelly-amqp"
 	"github.com/kaellybot/kaelly-configurator/models/entities"
 	"github.com/kaellybot/kaelly-configurator/utils/databases"
 )
@@ -9,11 +10,15 @@ func New(db databases.MySQLConnection) *Impl {
 	return &Impl{db: db}
 }
 
-func (repo *Impl) Get(guildID, channelID, twitterID string) (*entities.WebhookTwitter, error) {
+// Get is scoped to the game: with the same guild, channel and Twitter ID configured
+// for both games, an unfiltered lookup returns the other game's webhook, which the
+// caller then deletes from Discord.
+func (repo *Impl) Get(guildID, channelID, twitterID string,
+	game amqp.Game) (*entities.WebhookTwitter, error) {
 	var webhook entities.WebhookTwitter
 	err := repo.db.GetDB().
-		Where("guild_id = ? AND channel_id = ? AND twitter_id = ?",
-			guildID, channelID, twitterID).
+		Where("guild_id = ? AND channel_id = ? AND twitter_id = ? AND game = ?",
+			guildID, channelID, twitterID, game).
 		Limit(1).
 		Find(&webhook).Error
 	if err != nil {
