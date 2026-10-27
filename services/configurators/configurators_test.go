@@ -8,6 +8,10 @@ import (
 	"github.com/kaellybot/kaelly-configurator/services/guilds"
 )
 
+// unknownGame lies outside the amqp.Game enum: every defined game but ANY_GAME is
+// supported, so it stands for a game added to kaelly-amqp but not served yet.
+const unknownGame = amqp.Game(99)
+
 func newTestService(replies *[]*amqp.RabbitMQMessage) *Impl {
 	broker := amqp.Mock{
 		ReplyFunc: func(msg *amqp.RabbitMQMessage, _, _ string) error {
@@ -43,7 +47,7 @@ func requestTypes() []requestCase {
 func TestHandleRunsHandlerForSupportedGames(t *testing.T) {
 	t.Parallel()
 
-	for _, game := range []amqp.Game{amqp.Game_DOFUS_GAME, amqp.Game_DOFUS_TOUCH} {
+	for _, game := range []amqp.Game{amqp.Game_DOFUS_GAME, amqp.Game_DOFUS_TOUCH, amqp.Game_DOFUS_RETRO} {
 		t.Run(game.String(), func(t *testing.T) {
 			t.Parallel()
 
@@ -77,7 +81,7 @@ func TestConsumeRequestsRefusesUnsupportedGame(t *testing.T) {
 			service := newTestService(&published)
 
 			service.consumeRequests(amqp.Context{CorrelationID: "correlationID"},
-				&amqp.RabbitMQMessage{Type: test.requestType, Game: amqp.Game_DOFUS_RETRO})
+				&amqp.RabbitMQMessage{Type: test.requestType, Game: unknownGame})
 
 			if len(published) != 1 {
 				t.Fatalf("published %d reply(ies), want 1", len(published))
@@ -86,8 +90,8 @@ func TestConsumeRequestsRefusesUnsupportedGame(t *testing.T) {
 				t.Errorf("Status = %v, want %v", published[0].GetStatus(),
 					amqp.RabbitMQMessage_FAILED)
 			}
-			if published[0].GetGame() != amqp.Game_DOFUS_RETRO {
-				t.Errorf("Game = %v, want %v", published[0].GetGame(), amqp.Game_DOFUS_RETRO)
+			if published[0].GetGame() != unknownGame {
+				t.Errorf("Game = %v, want %v", published[0].GetGame(), unknownGame)
 			}
 			if published[0].GetType() != test.answerType {
 				t.Errorf("Type = %v, want %v", published[0].GetType(), test.answerType)
@@ -126,7 +130,7 @@ func TestConsumeNewsDropsUnusableGame(t *testing.T) {
 		game amqp.Game
 	}{
 		{name: "no game", game: amqp.Game_ANY_GAME},
-		{name: "unsupported game", game: amqp.Game_DOFUS_RETRO},
+		{name: "unsupported game", game: unknownGame},
 	}
 
 	for _, test := range tests {
@@ -163,7 +167,8 @@ func TestIsGameSupported(t *testing.T) {
 		amqp.Game_ANY_GAME:    false,
 		amqp.Game_DOFUS_GAME:  true,
 		amqp.Game_DOFUS_TOUCH: true,
-		amqp.Game_DOFUS_RETRO: false,
+		amqp.Game_DOFUS_RETRO: true,
+		unknownGame:           false,
 	}
 
 	for game, want := range tests {

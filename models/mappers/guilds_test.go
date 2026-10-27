@@ -10,7 +10,7 @@ import (
 func TestMapGuildCarriesRequestGame(t *testing.T) {
 	t.Parallel()
 
-	for _, game := range []amqp.Game{amqp.Game_DOFUS_GAME, amqp.Game_DOFUS_TOUCH} {
+	for _, game := range []amqp.Game{amqp.Game_DOFUS_GAME, amqp.Game_DOFUS_TOUCH, amqp.Game_DOFUS_RETRO} {
 		t.Run(game.String(), func(t *testing.T) {
 			t.Parallel()
 
